@@ -38,7 +38,7 @@ const initial=[
 ['Interactive assessment builder','Tool','Chapple Works','Concept','Potential reusable engine to develop separately from client-owned content.'],
 ['Digital coaching experience development','Service','Chapple Works','Concept','Potential standardized service derived from prototyping experience.']
 ].map((a,i)=>({id:'seed-'+i,name:a[0],type:a[1],owner:a[2],status:a[3],details:a[4]}));
-let entries;try{entries=JSON.parse(localStorage.getItem(catalogKey))}catch(e){}if(!Array.isArray(entries))entries=initial;
+let entries;try{entries=JSON.parse(localStorage.getItem(catalogKey))}catch(e){}if(!Array.isArray(entries)){entries=initial;localStorage.setItem(catalogKey,JSON.stringify(entries))}
 const save=()=>{localStorage.setItem(catalogKey,JSON.stringify(entries));renderCatalog()};
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function renderCatalog(){const type=document.getElementById('catalogType').value,owner=document.getElementById('catalogOwner').value;
@@ -78,7 +78,8 @@ document.getElementById('export').onclick=()=>{
 let dashboard,catalog;
 try{dashboard=JSON.parse(localStorage.getItem('cw-command-center-v01'))}catch(e){}
 try{catalog=JSON.parse(localStorage.getItem('cw-catalog-v02'))}catch(e){}
-if(!dashboard||!catalog){alert('Reload once and export again.');return}
+if(!dashboard||!catalog){alert('Missing saved records. Make a small change in the dashboard, then retry.');return}
+if(!Array.isArray(dashboard.projects)||!Array.isArray(dashboard.tasks)||!Array.isArray(dashboard.sessions)||!Array.isArray(catalog)||!catalog.every(x=>x&&typeof x.name==='string'&&typeof x.type==='string'&&typeof x.owner==='string')){alert('Backup validation failed.');return}
 const backup={format:'cw-backup-v03',exportedAt:new Date().toISOString(),dashboard,catalog};
 const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='chapple-works-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
