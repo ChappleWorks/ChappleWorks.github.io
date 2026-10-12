@@ -1,0 +1,43 @@
+name: Product build request
+description: Start a Chapple Works build from a short idea
+title: "[Build] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Give us the idea. Routine design and implementation decisions are handled by the production pipeline. Do not enter secrets or client-private information in this public repository.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What should this product do?
+      description: A sentence or rough transcript summary is enough.
+      placeholder: Build a tool that...
+    validations:
+      required: true
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Intended audience
+      options:
+        - Internal Chapple Works
+        - Public demonstration
+        - Client-specific (do not include private details)
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would prove it works?
+      description: Optional. Leave blank for the builder to propose acceptance tests.
+    validations:
+      required: false
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Guardrails
+      options:
+        - label: No paid services or purchases without approval
+          required: true
+        - label: No secrets or private client data in this issue
+          required: true
