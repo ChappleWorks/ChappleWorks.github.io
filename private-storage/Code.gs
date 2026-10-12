@@ -1,0 +1,6 @@
+// Chapple Works private storage: paste into a Sheets-bound Apps Script project.
+const TAB='Command Center Storage';
+function onOpen(){SpreadsheetApp.getUi().createMenu('Chapple Works').addItem('Open Storage','openStorage').addToUi()}
+function openStorage(){SpreadsheetApp.getUi().showSidebar(HtmlService.createHtmlOutputFromFile('Sidebar').setTitle('Chapple Works Storage'))}
+function readState(){const s=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(TAB);if(!s)throw Error('Missing storage tab');const r=s.getRange(2,2,2,1).getValues();return {dashboard:r[0][0]?JSON.parse(r[0][0]):null,catalog:r[1][0]?JSON.parse(r[1][0]):null}}
+function saveState(x){if(!x||!x.dashboard||!Array.isArray(x.dashboard.projects)||!Array.isArray(x.dashboard.tasks)||!Array.isArray(x.dashboard.sessions)||!Array.isArray(x.catalog))throw Error('Invalid backup');const a=JSON.stringify(x.dashboard),b=JSON.stringify(x.catalog);if(a.length>45000||b.length>45000)throw Error('Snapshot too large');const lock=LockService.getDocumentLock();lock.waitLock(10000);try{SpreadsheetApp.getActiveSpreadsheet().getSheetByName(TAB).getRange(2,2,2,2).setValues([[a,new Date().toISOString()],[b,new Date().toISOString()]])}finally{lock.releaseLock()}return 'Saved'}
