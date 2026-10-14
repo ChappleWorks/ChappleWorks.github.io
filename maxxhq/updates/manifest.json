@@ -1,6 +1,8 @@
 {
   "channel": "stable",
   "enabled": false,
-  "version": null,
-  "message": "MaxxHQ update channel initialized. No approved Windows-tested release is available yet."
+  "version": "6.0-class-preview",
+  "zipUrl": "https://chappleworks.github.io/maxxhq/updates/UNPUBLISHED-DO-NOT-INSTALL.zip",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "message": "No release published; manifest matches installed Class preview version."
 }
