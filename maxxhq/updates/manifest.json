@@ -1,8 +1,5 @@
 {
-  "channel": "stable",
-  "enabled": false,
-  "version": "6.0-class-preview",
-  "zipUrl": "https://chappleworks.github.io/maxxhq/updates/UNPUBLISHED-DO-NOT-INSTALL.zip",
-  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "message": "No release published; manifest matches installed Class preview version."
+  "version": "6.1.0",
+  "zipUrl": "https://chappleworks.github.io/MaxxHQ_6_1_UPDATE_STAGING.zip",
+  "sha256": "78655deeb8866372e148828653337cfb4bb19863bc05328aab08abbc4aa29988"
 }
