@@ -35,5 +35,13 @@ const originalInventory=inventory;
 inventory=function(){let choices=db.inventory.filter(x=>x.status!=='Sold').map(x=>({id:x.id,label:x.id+' — '+vlabel(x.vehicleId)}));let form='<label>Lot vehicle<select id="prStock">'+options(choices)+'</select></label>'+formfield('Proposed work','prWork')+'<label>Estimated cost ($)<input type="number" id="prCost" min="0" step="0.01"></label>'+btn('Request Service approval','sendPromise()','primary');let rows=db.promises.map(p=>'<tr><td>'+esc(p.stock)+'</td><td>'+esc(p.work)+'</td><td>$'+p.cost.toFixed(2)+'</td><td>'+esc(p.status)+'</td><td>'+esc(p.note)+'</td></tr>').join('');return originalInventory()+'<div class="section">'+box('Proposed sales promise',form)+'</div><div class="section">'+box('Promise requests','<table><tr><th>Vehicle</th><th>Work</th><th>Estimate</th><th>Status</th><th>Service note</th></tr>'+rows+'</table>')+'</div>'};
 const originalService=service;
 service=function(){let pending=db.promises.filter(p=>p.status==='Pending');let rows=pending.map(p=>'<tr><td>'+esc(p.stock)+'</td><td>'+esc(p.work)+'</td><td>$'+p.cost.toFixed(2)+'</td><td>'+btn('Approve',"decidePromise('"+p.id+"','Approved')")+' '+btn('Decline',"decidePromise('"+p.id+"','Declined')")+'</td></tr>').join('');return '<div class="section">'+box('Sales promises awaiting approval','<p>Approval does not guarantee a completion date.</p>'+(pending.length?'<table><tr><th>Vehicle</th><th>Work</th><th>Estimate</th><th>Decision</th></tr>'+rows+'</table>':'No pending requests.'))+'</div>'+originalService()};
+if(!db.staff)db.staff=[];
+if(!db.finance)db.finance=[];
+if(!db.payroll)db.payroll=[];
+function addEmployee(){const n=$('empName').value;db.staff.push({id:'E'+Date.now(),name:n,rate:20,department:'Service'});save();render()}
+function addFinance(){const amount=Number($('finAmount').value);db.finance.push({type:'Expense',amount});save();render()}
+function addPayroll(){const hours=Number($('payHours').value);db.payroll.push({hours,gross:hours*20});save();render()}
+const originalManagementFinance=management;
+management=function(){return wrap('Management Finance','Fictional records',box('Employees',db.staff.length+' staff')+box('Payroll',db.payroll.length+' records')+box('Finance',db.finance.length+' records'))};
 render();
 </script></body></html>
