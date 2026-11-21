@@ -87,9 +87,31 @@ button.secondary,.tabs button{background:#1b334b;color:#e8f4ff;box-shadow:none}
  .mobile-screen table{min-width:480px}
 }
 @media(min-width:701px){.mobile-screen{display:contents!important}}
-@media(max-width:700px){.hero{padding:16px 17px;margin:7px 0 10px}.hero h1{font-size:clamp(23px,6.5vw,29px);line-height:1.12;margin:5px 0 6px}.hero p{font-size:14px;margin:4px 0 0;color:#c8d8e8}.hero .eyebrow{font-size:10px;letter-spacing:.12em}.vin-disclaimer{font-size:11px;line-height:1.4;opacity:.8}#lookup{padding:15px 14px}#lookup h2{font-size:19px}#lookup .grid{gap:8px}#lookup #scanVin{width:100%}#lookup #form>p{margin:8px 0}#lookup label{font-size:12px}} @media(max-width:700px){.mobile-screen[data-screen="top"]{min-height:calc(100dvh - 180px);display:flex;flex-direction:column;justify-content:center}.mobile-screen[data-screen="top"][hidden]{display:none}#lookup{background:transparent;border:0;box-shadow:none;padding:10px 6px}#lookup h2{font-size:clamp(27px,7.2vw,34px);letter-spacing:-.05em;margin-bottom:18px}#lookup #form>.grid{gap:12px}#lookup #vin{height:54px;font-size:16px}#lookup #form button{min-height:50px}#lookup #scanVin{background:#1c354c;border:1px solid #355674}#lookup #form>p{margin:11px 0}.devflag{display:none}} </style></head>
-<body><div class="devflag">DEVELOPMENT PREVIEW · NOT THE LIVE VERSION MIKE IS USING</div><header><strong>LeoNet <em>Vehicle Intelligence</em></strong><div class="muted">Vehicle profiles · Mobile-first early access</div></header><main>
-<nav class="quicknav" aria-label="Vehicle sections"><a href="#lookup">Scan VIN</a><a href="#vehicleDetails">Overview</a><a href="#safetySection">Safety</a><a href="#maintenanceSection">Maintenance</a><a href="#vehicleTimeline">Timeline</a><a href="#auctionJournal">Auction journal</a><a href="#workspace">Professional tools</a><a href="#vehicleNotes">Notes</a></nav><div class="panel" id="lookup"><h2>What’s the VIN?</h2><form id="form"><div class="grid"><input id="vin" maxlength="17" autocomplete="off" spellcheck="false" placeholder="Enter VIN · 17 characters" required><button type="submit">Open vehicle profile</button></div><p><button type="button" id="scanVin" class="secondary">Scan VIN with camera</button></p><div id="cameraPanel" hidden><video id="vinVideo" autoplay playsinline muted style="width:100%;max-height:300px;background:#000;border-radius:12px"></video><p><button type="button" id="stopScan" class="secondary">Stop camera</button></p></div><p id="cameraStatus" class="muted" role="status"></p></form><p id="status" role="status"></p></div>
+@media(max-width:700px){.hero{padding:16px 17px;margin:7px 0 10px}.hero h1{font-size:clamp(23px,6.5vw,29px);line-height:1.12;margin:5px 0 6px}.hero p{font-size:14px;margin:4px 0 0;color:#c8d8e8}.hero .eyebrow{font-size:10px;letter-spacing:.12em}.vin-disclaimer{font-size:11px;line-height:1.4;opacity:.8}#lookup{padding:15px 14px}#lookup h2{font-size:19px}#lookup .grid{gap:8px}#lookup #scanVin{width:100%}#lookup #form>p{margin:8px 0}#lookup label{font-size:12px}} @media(max-width:700px){.mobile-screen[data-screen="top"]{min-height:calc(100dvh - 180px);display:flex;flex-direction:column;justify-content:center}.mobile-screen[data-screen="top"][hidden]{display:none}#lookup{background:transparent;border:0;box-shadow:none;padding:10px 6px}#lookup h2{font-size:clamp(27px,7.2vw,34px);letter-spacing:-.05em;margin-bottom:18px}#lookup #form>.grid{gap:12px}#lookup #vin{height:54px;font-size:16px}#lookup #form button{min-height:50px}#lookup #scanVin{background:#1c354c;border:1px solid #355674}#lookup #form>p{margin:11px 0}.devflag{display:none}} 
+/* Polished, restrained premium finish */
+:root{--accent:#f9a744;--ice:#77d4ff}
+header strong{font-weight:800}.brand-spark{font-size:14px;color:#77d4ff;vertical-align:top;margin-left:7px}
+.home-mark{height:64px;width:64px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#234d70,#112b45);border:1px solid #437398;color:#80d9ff;font-size:49px;line-height:1;box-shadow:0 10px 32px #0005,inset 0 1px 0 #ffffff24;margin:0 0 19px}
+.home-kicker{font-size:10px;letter-spacing:.22em;font-weight:800;color:#7ecfff}
+.home-subline{color:#b9cadc;margin:0 0 22px!important;font-size:14px}
+#lookup #form button[type="submit"]{background:linear-gradient(110deg,#ffc36a,#f49b32);color:#152033;box-shadow:0 10px 26px #e9832026,inset 0 1px 0 #ffffff66;letter-spacing:.01em}
+#lookup #scanVin{background:linear-gradient(145deg,#172f47,#12253b);border:1px solid #385773;color:#e2f2ff}
+#lookup button span{font-size:20px;margin-right:7px;vertical-align:-1px}
+@media(max-width:700px){
+ .mobile-screen[data-screen="top"]{justify-content:center}
+ #lookup{padding:18px 10px}
+ #lookup h2{font-size:clamp(33px,9vw,42px);margin:6px 0 0;line-height:1.1;letter-spacing:-.06em}
+ #lookup #vin{background:#0b1a2c;border:1px solid #44647e;border-radius:15px;height:58px;padding:0 17px}
+ #lookup #form button{border-radius:15px;min-height:54px}
+ #lookup #form>.grid{gap:11px}
+ #lookup #form>p{margin:10px 0}
+ .home-mark{height:58px;width:58px;font-size:42px;margin-bottom:16px;border-radius:18px}
+ .mobile-dock{border-top:1px solid #2c4863}
+ .mobile-dock button.active{background:linear-gradient(145deg,#254c69,#18374f)}
+}
+</style></head>
+<body><div class="devflag">DEVELOPMENT PREVIEW · NOT THE LIVE VERSION MIKE IS USING</div><header><strong>LeoNet <em>Vehicle Intelligence</em><span class="brand-spark" aria-hidden="true">✦</span></strong><div class="muted">Vehicle profiles · Mobile-first early access</div></header><main>
+<nav class="quicknav" aria-label="Vehicle sections"><a href="#lookup">Scan VIN</a><a href="#vehicleDetails">Overview</a><a href="#safetySection">Safety</a><a href="#maintenanceSection">Maintenance</a><a href="#vehicleTimeline">Timeline</a><a href="#auctionJournal">Auction journal</a><a href="#workspace">Professional tools</a><a href="#vehicleNotes">Notes</a></nav><div class="panel" id="lookup"><div class="home-mark" aria-hidden="true">⌁</div><div class="home-kicker">YOUR NEXT VEHICLE FILE</div><h2>Got a VIN?</h2><p class="home-subline">Good. We’ll take it from here.</p><form id="form"><div class="grid"><input id="vin" maxlength="17" autocomplete="off" spellcheck="false" placeholder="17 characters. No guesswork." required><button type="submit"><span aria-hidden="true">↗</span> Open vehicle profile</button></div><p><button type="button" id="scanVin" class="secondary"><span aria-hidden="true">▣</span> Scan instead</button></p><div id="cameraPanel" hidden><video id="vinVideo" autoplay playsinline muted style="width:100%;max-height:300px;background:#000;border-radius:12px"></video><p><button type="button" id="stopScan" class="secondary">Stop camera</button></p></div><p id="cameraStatus" class="muted" role="status"></p></form><p id="status" role="status"></p></div>
 <section id="result" hidden><div class="panel" id="vehicleDetails"><h2 id="heading">Vehicle details</h2><div id="tiles" class="grid"></div><p class="muted" id="warnings"></p><a id="nhtsa" target="_blank" rel="noopener noreferrer">View NHTSA decoder</a></div>
 <div class="panel"><h2>History source coverage</h2><table><thead><tr><th>Source</th><th>Current status</th><th>What it tells us</th></tr></thead><tbody>
 <tr><td>NHTSA vPIC</td><td class="tag">Live VIN decode</td><td>Manufacturer-reported identity and specifications</td></tr>
@@ -215,7 +237,7 @@ const oldRender=window.renderAuctionJournal;
 const journalObserver=new MutationObserver(()=>{if(!result.hidden)renderAuctionJournal()});
 journalObserver.observe(result,{attributes:true,attributeFilter:['hidden']});
 renderAuctionJournal();
-</script><nav class="mobile-dock" aria-label="Mobile navigation"><button type="button" data-dock="top" class="active"><span class="dock-icon">⌂</span>Home</button><button type="button" data-dock="vehicle"><span class="dock-icon">▣</span>Vehicle</button><button type="button" data-dock="history"><span class="dock-icon">◷</span>History</button><button type="button" data-dock="tools"><span class="dock-icon">⚒</span>Tools</button></nav><script>
+</script><nav class="mobile-dock" aria-label="Mobile navigation"><button type="button" data-dock="top" class="active"><span class="dock-icon">⌂</span>Home</button><button type="button" data-dock="vehicle"><span class="dock-icon">▤</span>Vehicle</button><button type="button" data-dock="history"><span class="dock-icon">◴</span>History</button><button type="button" data-dock="tools"><span class="dock-icon">◇</span>Tools</button></nav><script>
 (function(){
  const nav=document.querySelector('.mobile-dock');
  const buttons=[...nav.querySelectorAll('[data-dock]')];
