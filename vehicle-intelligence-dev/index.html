@@ -109,9 +109,35 @@ header strong{font-weight:800}.brand-spark{font-size:14px;color:#77d4ff;vertical
  .mobile-dock{border-top:1px solid #2c4863}
  .mobile-dock button.active{background:linear-gradient(145deg,#254c69,#18374f)}
 }
+
+/* Automotive editorial direction: carbon fiber, light streaks, instrument panel */
+body{background-color:#070c12;background-image:radial-gradient(ellipse at 85% 4%,rgba(25,103,140,.19),transparent 46%),repeating-linear-gradient(135deg,rgba(255,255,255,.013) 0px,rgba(255,255,255,.013) 1px,transparent 1px,transparent 5px)}
+header{background:rgba(7,13,21,.96);border-color:#2b3644}
+header em{color:#e6a75b}
+.home-kicker{display:flex;align-items:center;gap:9px;color:#bdc9d4;font-size:10px;letter-spacing:.2em}
+.signal-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffae4f;box-shadow:0 0 13px #ff9d27}
+#lookup{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(130deg,rgba(7,16,26,.25),rgba(7,16,26,.72)),repeating-linear-gradient(125deg,#172431 0px,#172431 2px,#111c27 2px,#111c27 5px)!important;border:1px solid #354453;box-shadow:0 25px 70px #0008,inset 0 1px 0 #ffffff1b}
+#lookup::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 82% 8%,rgba(125,180,209,.27),transparent 40%),linear-gradient(120deg,transparent 40%,rgba(255,255,255,.055) 49%,transparent 54%),linear-gradient(110deg,transparent 62%,rgba(221,161,82,.13) 67%,transparent 73%);pointer-events:none}
+#lookup::after{content:"";position:absolute;z-index:-1;width:280px;height:280px;right:-115px;top:-90px;border:1px solid rgba(157,187,206,.14);border-radius:50%;box-shadow:0 0 0 32px #ffffff05,0 0 0 64px #ffffff04,0 0 0 96px #ffffff03;pointer-events:none}
+#lookup h2{font-weight:850;letter-spacing:-.06em;color:#f6f7f8}
+#lookup h2 em{font-style:normal;color:#eab16e}
+#lookup .home-subline{color:#aab8c7}
+#lookup #vin{background:rgba(5,13,22,.83);border-color:#4b5a68;box-shadow:inset 0 1px 9px #0004}
+#lookup #form button[type=submit]{background:linear-gradient(125deg,#f3c37f,#d98c3d);color:#12171d;box-shadow:0 12px 30px #0005}
+#lookup #scanVin{background:rgba(12,23,33,.86);border-color:#596575}
+@media(max-width:700px){
+ .mobile-screen[data-screen="top"]{justify-content:center}
+ #lookup{padding:32px 23px 26px!important;border-radius:23px!important;margin:14px 0!important}
+ #lookup h2{font-size:clamp(34px,9vw,44px);line-height:1.07;margin:22px 0 10px}
+ #lookup .home-subline{font-size:14px;margin-bottom:26px!important}
+ #lookup #form>.grid{gap:11px}
+ #lookup #vin{height:56px}
+ #lookup #form button{min-height:52px}
+ .home-mark{display:none}
+}
 </style></head>
 <body><div class="devflag">DEVELOPMENT PREVIEW · NOT THE LIVE VERSION MIKE IS USING</div><header><strong>LeoNet <em>Vehicle Intelligence</em><span class="brand-spark" aria-hidden="true">✦</span></strong><div class="muted">Vehicle profiles · Mobile-first early access</div></header><main>
-<nav class="quicknav" aria-label="Vehicle sections"><a href="#lookup">Scan VIN</a><a href="#vehicleDetails">Overview</a><a href="#safetySection">Safety</a><a href="#maintenanceSection">Maintenance</a><a href="#vehicleTimeline">Timeline</a><a href="#auctionJournal">Auction journal</a><a href="#workspace">Professional tools</a><a href="#vehicleNotes">Notes</a></nav><div class="panel" id="lookup"><div class="home-mark" aria-hidden="true">⌁</div><div class="home-kicker">YOUR NEXT VEHICLE FILE</div><h2>Got a VIN?</h2><p class="home-subline">Good. We’ll take it from here.</p><form id="form"><div class="grid"><input id="vin" maxlength="17" autocomplete="off" spellcheck="false" placeholder="17 characters. No guesswork." required><button type="submit"><span aria-hidden="true">↗</span> Open vehicle profile</button></div><p><button type="button" id="scanVin" class="secondary"><span aria-hidden="true">▣</span> Scan instead</button></p><div id="cameraPanel" hidden><video id="vinVideo" autoplay playsinline muted style="width:100%;max-height:300px;background:#000;border-radius:12px"></video><p><button type="button" id="stopScan" class="secondary">Stop camera</button></p></div><p id="cameraStatus" class="muted" role="status"></p></form><p id="status" role="status"></p></div>
+<nav class="quicknav" aria-label="Vehicle sections"><a href="#lookup">Scan VIN</a><a href="#vehicleDetails">Overview</a><a href="#safetySection">Safety</a><a href="#maintenanceSection">Maintenance</a><a href="#vehicleTimeline">Timeline</a><a href="#auctionJournal">Auction journal</a><a href="#workspace">Professional tools</a><a href="#vehicleNotes">Notes</a></nav><div class="panel" id="lookup"><div class="home-kicker"><span class="signal-dot"></span> VEHICLE INTELLIGENCE</div><h2>Every detail.<br><em>One VIN.</em></h2><p class="home-subline">Know what you’re looking at.</p><form id="form"><div class="grid"><input id="vin" maxlength="17" autocomplete="off" spellcheck="false" placeholder="Enter 17-character VIN" required><button type="submit"><span aria-hidden="true">↗</span> Reveal vehicle</button></div><p><button type="button" id="scanVin" class="secondary"><span aria-hidden="true">▣</span> Scan VIN</button></p><div id="cameraPanel" hidden><video id="vinVideo" autoplay playsinline muted style="width:100%;max-height:300px;background:#000;border-radius:12px"></video><p><button type="button" id="stopScan" class="secondary">Stop camera</button></p></div><p id="cameraStatus" class="muted" role="status"></p></form><p id="status" role="status"></p></div>
 <section id="result" hidden><div class="panel" id="vehicleDetails"><h2 id="heading">Vehicle details</h2><div id="tiles" class="grid"></div><p class="muted" id="warnings"></p><a id="nhtsa" target="_blank" rel="noopener noreferrer">View NHTSA decoder</a></div>
 <div class="panel"><h2>History source coverage</h2><table><thead><tr><th>Source</th><th>Current status</th><th>What it tells us</th></tr></thead><tbody>
 <tr><td>NHTSA vPIC</td><td class="tag">Live VIN decode</td><td>Manufacturer-reported identity and specifications</td></tr>
