@@ -15,6 +15,10 @@ const api = '/rest/v1/';
 
 async function request(path, {method='GET', token, body, prefer}={}) {
   const headers = {apikey:key};
+  if (path.startsWith(api)) {
+    headers['Accept-Profile']='vincore';
+    if (method!=='GET') headers['Content-Profile']='vincore';
+  }
   if (token) headers.Authorization = 'Bearer ' + token;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (prefer) headers.Prefer = prefer;

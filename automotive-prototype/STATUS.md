@@ -2,22 +2,22 @@
 
 ## What was completed
 
-Confirmed the ChappleWorks Supabase dashboard is accessible. The leonet-systems organization is on the Free Plan and already has leonet-crm-demo and leonet-crm-test. Supabase explicitly blocked creation of another free project under the account-wide two-project limit. Neither CRM project was modified. Added a read-only verification mode to the staging runner for checking the original tagged records after a restore.
+Prepared the shared Supabase design on feature/vincore-dealer-accounts. Moved dealer data into vincore, separated private database helpers, selected the API schema explicitly and isolated the browser session key and sign-out. Documented staging approval, rollback, real API checks and VINCORE-only recovery.
 
 ## What was verified
 
-Six automated local tests passed. They cover embedded PostgreSQL tenant isolation, blocked cross-dealer imports, atomic auction outcomes and actual local backup/restore. The phone-width browser test uses mocked Supabase and NHTSA services. The new restore-check tests use a mocked API and confirm the checker reads the tagged records without fixture writes and rejects leaked events or invalid tags.
+Six local automated tests passed. Embedded PostgreSQL applied both migrations, denied access to CRM-only and cross-dealer identities on VINCORE, and denied a VINCORE-only identity using a modeled CRM membership policy. A VINCORE-only data export restored into a separate local database without changing its existing CRM or Auth records. Missing identity references caused a rollback. Browser and API checks used mocks and verified explicit schema selection and local-session sign-out.
 
 ## What is still pending
 
-No isolated VINCORE project or HTTPS staging preview was activated. Hosted migrations, fictional Auth accounts, actual Auth/API workflow, hosted backup/restore and Mike's phone tests are pending. No spend, deployment, merge or live preview change occurred.
+Effective hosted CRM grants, views, privileged routines and Worker authorization are unverified. The real Supabase API, isolated recovery including identity mapping, CRM and Invoice Studio regression, and Mike's phone rehearsal have not run. No changes were applied to leonet-crm-test or either live application. No merge or charges occurred.
 
 ## What Chris needs to decide
 
-Identify an approved isolated free project with capacity. Freeing either CRM slot requires an explicit decision on which project may be paused after checking dependencies. A local Supabase stack on an existing Docker-capable host is a no-cost alternative for real Auth/API checks. Mike's off-device rehearsal still needs an approved separate HTTPS preview.
+Approve a separately scoped activation in leonet-crm-test after the grant and dependency preflight, or continue in a disposable Supabase environment for hosted-style verification.
 
 ## Next recommended action
 
-Once the isolated target is available, follow the [staging runbook](dealer/pilot/STAGING.md). Apply migrations, provision the three fictional users, run the API and browser workflows, restore into a separate target and check the original tag. Then rehearse on Mike's phone using fictional files in his formats.
+Follow the [shared-project plan](dealer/pilot/SHARED-SUPABASE.md) after approval. Record the CRM/Invoice Studio baseline, run the real API access matrix with fictional identities, and prove a VINCORE-only restore before the phone rehearsal.
 
-[Draft PR and test source](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files) · [Supabase Free Plan project limit](https://supabase.com/docs/guides/platform/billing-faq#how-many-free-projects-can-i-have)
+[Draft PR and test evidence](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)

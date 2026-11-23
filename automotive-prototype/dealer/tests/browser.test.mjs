@@ -5,7 +5,8 @@ import test from 'node:test';
 import {chromium} from 'playwright';
 
 const sdk = `
-export function createClient(){
+export function createClient(_url,_key,options){
+  if(options.db.schema!=='vincore'||options.auth.storageKey!=='leonet-vincore-auth')throw Error('Incorrect VINCORE schema or session namespace');
   const user={id:'test-user',email:'dealer@example.test'};
   const signedIn=()=>localStorage.getItem('fixture-session')==='yes';
   const rows=JSON.parse(localStorage.getItem('fixture-vehicles')||'[]');
@@ -18,7 +19,7 @@ export function createClient(){
       onAuthStateChange:fn=>{authChanged=fn},
       getUser:async()=>({data:{user:signedIn()?user:null}}),
       signInWithPassword:async()=>{localStorage.setItem('fixture-session','yes');return {}},
-      signOut:async()=>{localStorage.removeItem('fixture-session');authChanged('SIGNED_OUT');return {}}
+      signOut:async({scope})=>{if(scope!=='local')throw Error('Shared Auth sign-out must stay local');localStorage.removeItem('fixture-session');authChanged('SIGNED_OUT');return {}}
     },
     from(name){
       let filters=[], action='select', values, single=false;

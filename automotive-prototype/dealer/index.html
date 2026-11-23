@@ -71,7 +71,7 @@ function publicKey(key){
 }
 if(!config?.url || !/^https:\/\/[\w-]+\.supabase\.co\/?$/.test(config.url) || !publicKey(config.anonKey)){show('setup',true)}else{
 try {const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/+esm');
-const supabase=createClient(config.url,config.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const supabase=createClient(config.url,config.anonKey,{db:{schema:"vincore"},auth:{storageKey:"leonet-vincore-auth",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 let dealerId=null, vehicles=[], selected=null, sessionUser=null, pendingImport=null, editing=null;
 let workspaceVersion=0, listRequest=0, eventRequest=0, researchRequest=0, importRequest=0;
 const inWorkspace=(version,id)=>workspaceVersion===version && dealerId===id;
@@ -184,7 +184,7 @@ async function selectVehicle(id){
   for(const e of events){const tr=document.createElement('tr');td(tr,new Date(e.created_at).toLocaleString());td(tr,e.event_type);td(tr,e.amount==null?'—':money(e.amount));td(tr,e.note);body.append(tr)}
 }
 $('login').addEventListener('submit',async e=>{e.preventDefault();const button=e.target.querySelector('button');button.disabled=true;try{msg('Signing in…');await checked(supabase.auth.signInWithPassword({email:value('email'),password:$('password').value}));$('password').value='';msg('');await initialize()}catch(err){msg('Sign-in failed: '+err.message,true)}finally{button.disabled=false}});
-$('logout').addEventListener('click',async()=>{try{await checked(supabase.auth.signOut());clearWorkspace();sessionUser=null;show('app',false);show('logout',false);show('auth',true);$('who').textContent='';msg('Signed out.')}catch(err){msg(err.message,true)}});
+$('logout').addEventListener('click',async()=>{try{await checked(supabase.auth.signOut({scope:'local'}));clearWorkspace();sessionUser=null;show('app',false);show('logout',false);show('auth',true);$('who').textContent='';msg('Signed out.')}catch(err){msg(err.message,true)}});
 $('dealer').addEventListener('change',async e=>{const id=e.target.value;clearWorkspace();dealerId=id;msg('');try{await loadVehicles()}catch(err){msg(err.message,true)}});
 $('refresh').addEventListener('click',async()=>{try{await loadVehicles();msg('Auction list refreshed.')}catch(err){msg(err.message,true)}});
 $('vehicleForm').addEventListener('submit',async e=>{

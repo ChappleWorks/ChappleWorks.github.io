@@ -1,10 +1,10 @@
 # VINCORE staging and Mike's phone rehearsal
 
-Use this runbook for a separate Supabase project and a separate HTTPS origin for the dealer workspace. Start with fictional accounts and files. Confirm the hosting and Supabase account can run without any extra charge, including overages. No paid backups or upgrades are needed for this rehearsal. The development checkout has no configured hosted project.
+Use this runbook for a separate HTTPS origin for the dealer workspace. Before sharing leonet-crm-test, complete the [shared-project approval and validation gates](SHARED-SUPABASE.md). Start with fictional accounts and files. Confirm the hosting and Supabase account can run without any extra charge, including overages. No paid backups or upgrades are needed for this rehearsal. The development checkout has no configured hosted project.
 
 ## Set up staging
 
-1. Confirm the staging project reference and separate HTTPS origin. In Supabase, disable public signups and leave password sign-in enabled. Apply [the base schema](../../supabase/dealer_workspace.sql) then [the upgrade](../../supabase/dealer_workspace_upgrade.sql) to a blank project. If the base schema already exists, use the upgrade procedure in the [workspace guide](../README.md).
+1. Confirm the staging project reference and separate HTTPS origin. In Supabase, disable public signups and leave password sign-in enabled. Apply [the base schema](../../supabase/dealer_workspace.sql) then [the upgrade](../../supabase/dealer_workspace_upgrade.sql) to a blank project. If the vincore base migration already exists, apply only the upgrade. A previous public-schema pilot is a separate migration case, covered in the shared-project plan.
 2. In Authentication, create three confirmed test users with distinct randomly generated passwords. Use the addresses below as fictional identifiers and auto-confirm them in the admin interface. Keep the passwords in the approved secret store. Do not send mail to these addresses.
 
    | Seat | Address | Membership |
@@ -14,7 +14,7 @@ Use this runbook for a separate Supabase project and a separate HTTPS origin for
    | Dealer A teammate | vincore-dealer-a-teammate@example.com | VINCORE Pilot Dealer A, dealer |
 
 3. Execute [assign-fictional-dealers.sql](assign-fictional-dealers.sql) as the staging database administrator. It rolls back if any required confirmed account is missing and is safe to rerun for those same accounts.
-4. Serve the feature branch dealer workspace at the staging origin with an untracked environment-specific config.js. Use the project URL and public publishable key. The hosted check never needs an admin key, database password, or production access.
+4. Serve the feature branch dealer workspace at the staging origin with an untracked environment-specific config.js. Use the project URL and public publishable key. Add only vincore to the Data API exposed schemas after both migrations succeed. Keep vincore_private and its helpers unexposed. The hosted check never needs an admin key, database password, or production access.
 5. On the test runner, supply VINCORE_STAGE_URL, VINCORE_STAGE_KEY, VINCORE_STAGE_PASSWORD_A, VINCORE_STAGE_PASSWORD_B, and VINCORE_STAGE_PASSWORD_TEAMMATE through the process environment. Set VINCORE_STAGE_CONFIRM to fictional-staging only after checking the project reference and account assignments. Use the test accounts above. From dealer/tests, run:
 
    ```sh
@@ -25,7 +25,9 @@ Use this runbook for a separate Supabase project and a separate HTTPS origin for
 
 ## Restore rehearsal
 
-The local test captures and restores a PostgreSQL data-directory archive into a separate instance. It verifies the purchase, expenses, inventory and RLS after restore. Hosted recovery still requires its own rehearsal.
+For shared leonet-crm-test, follow the VINCORE-only recovery procedure in [SHARED-SUPABASE.md](SHARED-SUPABASE.md). The project-level backup workflow below is for a dedicated VINCORE project only.
+
+The local test exports and restores only the VINCORE table data into a separate instance. It verifies the purchase, expenses, inventory and RLS after restore. Hosted recovery still requires its own rehearsal.
 
 1. In the dedicated fictional staging project, complete the API check and record the evidence tag. Follow the [Supabase CLI backup and restore guide](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore) to make a manual logical backup, including the Auth data needed by VINCORE memberships. Free projects do not include automatic backups. Store the backup outside Git and Drive handoffs with restricted access.
 2. Restore into an empty disposable Supabase stack or an approved second no-cost test project. Confirm the source and destination references before executing the restore. Keep the staging source intact.

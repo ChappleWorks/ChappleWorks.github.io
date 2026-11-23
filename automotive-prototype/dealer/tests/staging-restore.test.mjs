@@ -14,6 +14,7 @@ globalThis.fetch = async (url, options) => {
     const id=email.includes('teammate')?'team':email.includes('dealer-b')?'b':'a';
     data={access_token:id,user:{id}};
   } else {
+    if(options.headers['Accept-Profile']!=='vincore')throw Error('Missing VINCORE API schema');
     if (options.method !== 'GET') throw Error('Restore mode attempted a mutation');
     if (path.pathname.endsWith('/dealer_memberships')){
       data=[{dealer_id:token==='b'?'B':'A',dealers:{name:'VINCORE Pilot Dealer '+(token==='b'?'B':'A')}}];

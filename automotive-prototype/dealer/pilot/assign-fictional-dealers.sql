@@ -7,12 +7,12 @@ declare
   account record;
   account_id uuid;
 begin
-  insert into public.dealers (id,name) values
+  insert into vincore.dealers (id,name) values
     (a,'VINCORE Pilot Dealer A'),(b,'VINCORE Pilot Dealer B')
   on conflict (id) do nothing;
 
-  if not exists (select 1 from public.dealers where id=a and name='VINCORE Pilot Dealer A')
-     or not exists (select 1 from public.dealers where id=b and name='VINCORE Pilot Dealer B') then
+  if not exists (select 1 from vincore.dealers where id=a and name='VINCORE Pilot Dealer A')
+     or not exists (select 1 from vincore.dealers where id=b and name='VINCORE Pilot Dealer B') then
     raise exception 'Unexpected pilot dealer identities';
   end if;
 
@@ -24,11 +24,11 @@ begin
   loop
     select id into strict account_id from auth.users
       where email=account.email and email_confirmed_at is not null;
-    if exists (select 1 from public.dealer_memberships m
+    if exists (select 1 from vincore.dealer_memberships m
       where m.user_id=account_id and (m.dealer_id<>account.dealer_id or m.role<>account.role)) then
       raise exception 'Pilot user has an unexpected existing membership';
     end if;
-    insert into public.dealer_memberships (dealer_id,user_id,role)
+    insert into vincore.dealer_memberships (dealer_id,user_id,role)
       values (account.dealer_id,account_id,account.role) on conflict do nothing;
   end loop;
 end $$;
