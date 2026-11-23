@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LeoNet VINCORE | Auction Intelligence Preview</title>
+<style>:root{font-family:Segoe UI,Arial,sans-serif;background:#07131e;color:#e8f5fc}*{box-sizing:border-box}body{margin:0}header{padding:22px 5%;background:#0c2435;border-bottom:1px solid #21617b}header strong{font-size:24px}header em{color:#ff9d27}main{max-width:1150px;margin:auto;padding:28px 18px}.panel{background:#102636;border:1px solid #24526a;border-radius:15px;padding:22px;margin:16px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.tile{background:#0b1d2b;border:1px solid #25495b;border-radius:10px;padding:16px}label{display:block;color:#a9c5d2;margin-bottom:7px}input,textarea,select{background:#07131e;border:1px solid #41728a;color:#fff;padding:12px;border-radius:8px;width:100%;font:inherit}button{background:#ff9d27;border:0;border-radius:8px;padding:12px 20px;color:#101820;font-weight:700;cursor:pointer}button:disabled{opacity:.5}a{color:#69d9ff}.muted{color:#a9c5d2}.value{font-size:20px;font-weight:700;margin-top:8px;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #25495b;text-align:left;padding:10px;vertical-align:top}th{color:#9bc0d0}.tag{color:#ffc56b}small{color:#a9c5d2}#status{min-height:20px}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tabs button{background:#173d50;color:#d9f4ff;padding:9px 13px}.tabs button.active{background:#ff9d27;color:#101820}.pill{display:inline-block;border:1px solid #3e6d80;border-radius:30px;padding:5px 10px;margin:4px;color:#b9d9e5}.scroll{overflow-x:auto}input[type=file]{padding:9px}button.secondary{background:#254d60;color:white}.metric{font-size:24px;font-weight:700}.good{color:#7ce0af}.warn{color:#ffc56b}.hero{padding:28px 22px;background:linear-gradient(135deg,#14394c,#0a1b29);border:1px solid #32637a;border-radius:20px;margin:14px 0 20px}.hero h1{font-size:clamp(26px,5vw,42px);margin:0 0 10px;letter-spacing:-.035em}.hero p{line-height:1.5}.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:11px;color:#75cde7;font-weight:700}.quicknav{display:flex;gap:8px;overflow-x:auto;padding:8px 0 16px;scrollbar-width:thin}.quicknav a{white-space:nowrap;padding:11px 14px;border-radius:12px;background:#16384b;border:1px solid #2b5b71;text-decoration:none;color:#e7f6fc;font-weight:600;font-size:13px}.quicknav a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #ffb84e;outline-offset:2px}.quicknav a:hover{background:#22516b}.panel{scroll-margin-top:15px}.trustline{font-size:12px;color:#b0cbd7}.sitefooter{text-align:center;color:#92b2c2;font-size:12px;padding:25px 10px}.summarybar{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.summarybar span{background:#1d4458;border-radius:99px;padding:8px 11px;font-size:12px;color:#d3ecf7}@media(max-width:600px){header{padding:15px 5%}header strong{font-size:20px}main{padding:12px}.panel{padding:16px;margin:12px 0;border-radius:14px}.hero{padding:22px 17px}.grid{grid-template-columns:1fr 1fr;gap:9px}.grid>input,.grid>button{min-width:0}.tile{padding:12px}th,td{padding:8px;font-size:12px}button{padding:12px}#form>.grid{grid-template-columns:1fr}#form button{width:100%}#workspace .grid{grid-template-columns:1fr}.tabs{display:grid;grid-template-columns:1fr 1fr}.tabs button{padding:10px 6px;font-size:12px}}.devflag{background:#ffd17e;color:#18202a;padding:9px 16px;font-size:12px;font-weight:800;text-align:center;letter-spacing:.03em}.eventgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px}.eventgrid label{font-size:12px}.eventlist{display:grid;gap:10px;margin-top:12px}.event{border:1px solid #326078;background:#0c1d2a;border-radius:12px;padding:13px}.eventtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.eventmeta{font-size:12px;color:#9ebfce;margin-top:5px}.event strong{color:#fff}.minihead{font-size:13px;color:#a9c5d2;text-transform:uppercase;letter-spacing:.07em}.quiet{font-size:12px;color:#b4cbd5}.rowactions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.rowactions button{flex:1;min-width:125px}.event textarea{margin-top:8px}.eventpill{display:inline-block;padding:4px 9px;background:#254c60;border-radius:99px;font-size:11px}.dev-only{border-color:#826a30}@media(max-width:600px){.eventgrid{grid-template-columns:1fr 1fr}.eventgrid>div:first-child{grid-column:span 2}}
+/* Premium mobile-first interface, additive to existing functional UI */
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#080f1b;color:#f1f6ff;color-scheme:dark}
+body{background:radial-gradient(ellipse at 20% -10%,#183653 0,transparent 42%),#080f1b;line-height:1.5}
+header{background:rgba(10,21,36,.94);border-bottom:1px solid #263d54;position:sticky;top:0;z-index:20;backdrop-filter:blur(16px)}
+header strong{letter-spacing:-.045em}
+main{max-width:1180px}
+.hero{background:radial-gradient(circle at 90% 0%,rgba(39,145,234,.23),transparent 45%),linear-gradient(140deg,#172d47,#0e192a 65%);border:1px solid #2c4c6d;border-radius:24px;box-shadow:0 16px 55px #0004}
+.hero h1{font-weight:850;letter-spacing:-.05em;line-height:1.12}
+.panel{background:linear-gradient(160deg,#142338,#101c2e);border:1px solid #263d55;border-radius:20px;box-shadow:0 12px 35px #0002}
+.tile,.event{background:#0d1a2c;border:1px solid #283e55;border-radius:16px}
+.panel h2{letter-spacing:-.035em}
+.eyebrow{color:#66c9ff}
+.muted,label,small,.eventmeta{color:#a9bbd0}
+input,textarea,select{background:#0a1627;border:1px solid #3b536c;border-radius:12px;min-height:46px}
+input:focus,textarea:focus,select:focus{outline:2px solid #53c1ff;outline-offset:1px;border-color:#53c1ff}
+button{background:linear-gradient(135deg,#ffb650,#ff902d);border-radius:12px;min-height:44px;box-shadow:0 4px 12px #0002}
+button.secondary,.tabs button{background:#1b334b;color:#e8f4ff;box-shadow:none}
+.tabs button.active{background:#ffac43;color:#111c2a}
+.quicknav a{background:#182d43;border:1px solid #304960;border-radius:13px}
+.pill,.summarybar span,.eventpill{background:#1b354c;border-color:#31516b}
+.devflag{background:#172c42;color:#b7d7ed;border-bottom:1px solid #34516b;font-size:10px;letter-spacing:.1em}
+@media(max-width:700px){
+ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+ header{padding:12px 16px}
+ main{padding:12px 13px 24px}
+ .hero{padding:24px 19px;border-radius:23px}
+ .hero h1{font-size:clamp(28px,8vw,38px)}
+ .panel{padding:18px 16px;margin:13px 0;border-radius:19px}
+ .grid{grid-template-columns:1fr 1fr}
+ .tile{padding:14px}
+ .quicknav{display:none}
+ .eventgrid{grid-template-columns:1fr}
+ .eventgrid>div:first-child{grid-column:auto}
+ .tabs{display:flex;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+ .tabs button{flex:0 0 auto;padding:12px 16px;font-size:13px}
+ .rowactions{flex-direction:column}
+ .rowactions button{width:100%}
+ button{min-height:48px}
+ input,select,textarea{font-size:16px}
+ .mobile-dock{position:fixed;bottom:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 9px calc(8px + env(safe-area-inset-bottom));background:rgba(9,19,32,.96);backdrop-filter:blur(20px);border-top:1px solid #36516c;box-shadow:0 -10px 32px #0005}
+ .mobile-dock button{background:transparent;color:#9fb9d0;box-shadow:none;border-radius:12px;min-height:52px;padding:5px 2px;font-size:11px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px}
+ .mobile-dock button .dock-icon{font-size:21px;line-height:1.2}
+ .mobile-dock button.active{background:#1c3b54;color:#fff}
+ .mobile-dock button:focus-visible{outline:2px solid #ffb650}
+}
+@media(min-width:701px){.mobile-dock{display:none}}
+
+/* Real mobile screens, compact typography and controls */
+@media(max-width:700px){
+ html{scroll-padding-top:74px}
+ body{font-size:14px}
+ header{padding:9px 14px}
+ header strong{font-size:17px}
+ header .muted{display:none}
+ .devflag{font-size:9px;padding:5px 8px}
+ main{padding:9px 11px 18px}
+ .hero{padding:17px 15px;margin:8px 0 11px}
+ .hero h1{font-size:27px}
+ .hero p{margin:9px 0;font-size:13px}
+ .summarybar{gap:5px;margin-top:8px}
+ .summarybar span{font-size:10px;padding:5px 8px}
+ .panel{padding:14px 13px;margin:9px 0;border-radius:15px}
+ .panel h2{font-size:19px;margin:0 0 8px}
+ .panel h3{font-size:16px;margin:15px 0 8px}
+ .panel p{margin:9px 0}
+ .grid,.eventgrid{gap:9px}
+ .grid{grid-template-columns:1fr}
+ #tiles.grid,#historySummary.grid{grid-template-columns:1fr 1fr}
+ label{font-size:12px;line-height:1.35;margin-bottom:5px}
+ input,textarea,select{padding:9px 11px;min-height:42px;font-size:16px}
+ button{padding:9px 13px;min-height:44px}
+ .tile{padding:11px}
+ .metric{font-size:20px}
+ .mobile-screen[hidden]{display:none!important}
+ .mobile-dock button{min-height:46px}
+ .mobile-dock button .dock-icon{font-size:19px}
+ .mobile-dock{padding-top:5px}
+ #result{display:contents}
+ #result[hidden]{display:none}
+ .mobile-screen{min-width:0}
+ .mobile-screen>.panel:first-child{margin-top:8px}
+ .mobile-screen>h2{font-size:20px}
+ .mobile-screen .scroll{max-width:100%}
+ .mobile-screen table{min-width:480px}
+}
+@media(min-width:701px){.mobile-screen{display:contents!important}}
+@media(max-width:700px){.hero{padding:16px 17px;margin:7px 0 10px}.hero h1{font-size:clamp(23px,6.5vw,29px);line-height:1.12;margin:5px 0 6px}.hero p{font-size:14px;margin:4px 0 0;color:#c8d8e8}.hero .eyebrow{font-size:10px;letter-spacing:.12em}.vin-disclaimer{font-size:11px;line-height:1.4;opacity:.8}#lookup{padding:15px 14px}#lookup h2{font-size:19px}#lookup .grid{gap:8px}#lookup #scanVin{width:100%}#lookup #form>p{margin:8px 0}#lookup label{font-size:12px}} @media(max-width:700px){.mobile-screen[data-screen="top"]{min-height:calc(100dvh - 180px);display:flex;flex-direction:column;justify-content:center}.mobile-screen[data-screen="top"][hidden]{display:none}#lookup{background:transparent;border:0;box-shadow:none;padding:10px 6px}#lookup h2{font-size:clamp(27px,7.2vw,34px);letter-spacing:-.05em;margin-bottom:18px}#lookup #form>.grid{gap:12px}#lookup #vin{height:54px;font-size:16px}#lookup #form button{min-height:50px}#lookup #scanVin{background:#1c354c;border:1px solid #355674}#lookup #form>p{margin:11px 0}.devflag{display:none}} 
+/* Polished, restrained premium finish */
+:root{--accent:#f9a744;--ice:#77d4ff}
+header strong{font-weight:800}.brand-spark{font-size:14px;color:#77d4ff;vertical-align:top;margin-left:7px}
+.home-mark{height:64px;width:64px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#234d70,#112b45);border:1px solid #437398;color:#80d9ff;font-size:49px;line-height:1;box-shadow:0 10px 32px #0005,inset 0 1px 0 #ffffff24;margin:0 0 19px}
+.home-kicker{font-size:10px;letter-spacing:.22em;font-weight:800;color:#7ecfff}
+.home-subline{color:#b9cadc;margin:0 0 22px!important;font-size:14px}
+#lookup #form button[type="submit"]{background:linear-gradient(110deg,#ffc36a,#f49b32);color:#152033;box-shadow:0 10px 26px #e9832026,inset 0 1px 0 #ffffff66;letter-spacing:.01em}
+#lookup #scanVin{background:linear-gradient(145deg,#172f47,#12253b);border:1px solid #385773;color:#e2f2ff}
+#lookup button span{font-size:20px;margin-right:7px;vertical-align:-1px}
+@media(max-width:700px){
+ .mobile-screen[data-screen="top"]{justify-content:center}
+ #lookup{padding:18px 10px}
+ #lookup h2{font-size:clamp(33px,9vw,42px);margin:6px 0 0;line-height:1.1;letter-spacing:-.06em}
+ #lookup #vin{background:#0b1a2c;border:1px solid #44647e;border-radius:15px;height:58px;padding:0 17px}
+ #lookup #form button{border-radius:15px;min-height:54px}
+ #lookup #form>.grid{gap:11px}
+ #lookup #form>p{margin:10px 0}
+ .home-mark{height:58px;width:58px;font-size:42px;margin-bottom:16px;border-radius:18px}
+ .mobile-dock{border-top:1px solid #2c4863}
+ .mobile-dock button.active{background:linear-gradient(145deg,#254c69,#18374f)}
+}
+
+/* Automotive editorial direction: carbon fiber, light streaks, instrument panel */
+body{background-color:#070c12;background-image:radial-gradient(ellipse at 85% 4%,rgba(25,103,140,.19),transparent 46%),repeating-linear-gradient(135deg,rgba(255,255,255,.013) 0px,rgba(255,255,255,.013) 1px,transparent 1px,transparent 5px)}
+header{background:rgba(7,13,21,.96);border-color:#2b3644}
+header em{color:#e6a75b}
+.home-kicker{display:flex;align-items:center;gap:9px;color:#bdc9d4;font-size:10px;letter-spacing:.2em}
+.signal-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffae4f;box-shadow:0 0 13px #ff9d27}
+#lookup{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(130deg,rgba(7,16,26,.25),rgba(7,16,26,.72)),repeating-linear-gradient(125deg,#172431 0px,#172431 2px,#111c27 2px,#111c27 5px)!important;border:1px solid #354453;box-shadow:0 25px 70px #0008,inset 0 1px 0 #ffffff1b}
+#lookup::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 82% 8%,rgba(125,180,209,.27),transparent 40%),linear-gradient(120deg,transparent 40%,rgba(255,255,255,.055) 49%,transparent 54%),linear-gradient(110deg,transparent 62%,rgba(221,161,82,.13) 67%,transparent 73%);pointer-events:none}
+#lookup::after{content:"";position:absolute;z-index:-1;width:280px;height:280px;right:-115px;top:-90px;border:1px solid rgba(157,187,206,.14);border-radius:50%;box-shadow:0 0 0 32px #ffffff05,0 0 0 64px #ffffff04,0 0 0 96px #ffffff03;pointer-events:none}
+#lookup h2{font-weight:850;letter-spacing:-.06em;color:#f6f7f8}
+#lookup h2 em{font-style:normal;color:#eab16e}
+#lookup .home-subline{color:#aab8c7}
+#lookup #vin{background:rgba(5,13,22,.83);border-color:#4b5a68;box-shadow:inset 0 1px 9px #0004}
+#lookup #form button[type=submit]{background:linear-gradient(125deg,#f3c37f,#d98c3d);color:#12171d;box-shadow:0 12px 30px #0005}
+#lookup #scanVin{background:rgba(12,23,33,.86);border-color:#596575}
+@media(max-width:700px){
+ .mobile-screen[data-screen="top"]{justify-content:center}
+ #lookup{padding:32px 23px 26px!important;border-radius:23px!important;margin:14px 0!important}
+ #lookup h2{font-size:clamp(34px,9vw,44px);line-height:1.07;margin:22px 0 10px}
+ #lookup .home-subline{font-size:14px;margin-bottom:26px!important}
+ #lookup #form>.grid{gap:11px}
+ #lookup #vin{height:56px}
+ #lookup #form button{min-height:52px}
+ .home-mark{display:none}
+}
+@media(max-width:700px){#lookup{text-align:center}#lookup .home-kicker{justify-content:center}#lookup .home-mark{margin-left:auto;margin-right:auto}#lookup h2,#lookup .home-subline{text-align:center}#lookup #vin{text-align:center}#lookup #vin::placeholder{text-align:center}} 
+#tiles{display:block!important}
+.vehicle-id-card{background:linear-gradient(140deg,#13273a,#0b1828);border:1px solid #38536a;border-radius:17px;padding:18px}
+.vehicle-id-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.identity-status{font-size:9px;letter-spacing:.08em;color:#a4d9b8;background:#19372d;border:1px solid #305c4c;border-radius:99px;padding:5px 8px;white-space:nowrap}
+.vehicle-id-title{font-size:clamp(21px,4.8vw,30px);font-weight:800;letter-spacing:-.045em;margin:10px 0 3px}
+.vehicle-vin{font-size:12px;color:#9eb5c9;letter-spacing:.045em;overflow-wrap:anywhere}
+.vehicle-id-specs{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:19px;padding-top:16px;border-top:1px solid #31485d}
+.identity-spec span,.identity-more span{display:block;font-size:12px;color:#9fb5c7;margin-bottom:4px}
+.identity-spec strong{font-size:15px;overflow-wrap:anywhere}
+.identity-expand{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:16px;background:#1b354b!important;color:#dbeeff!important;box-shadow:none!important;font-size:13px}
+.identity-more{margin-top:10px}
+.identity-more>div{display:flex;justify-content:space-between;gap:16px;padding:10px 2px;border-bottom:1px solid #2d4254}
+.identity-more strong{text-align:right;max-width:65%;font-size:13px;overflow-wrap:anywhere}
+.safety-header{display:flex;justify-content:space-between;align-items:center}
+.safety-icon{font-size:30px;color:#ffbb67}
+.safety-note{font-size:12px}
+.recall-count{font-size:12px;color:#a9c5d5;margin:12px 0}
+.recall-list{display:grid;gap:9px}
+.recall-item{border:1px solid #344c61;border-radius:13px;background:#0c1a2a;overflow:hidden}
+.recall-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:13px}
+.recall-item summary::-webkit-details-marker{display:none}
+.recall-number{font-size:11px;color:#ffbf74;background:#382c23;border-radius:8px;padding:7px}
+.recall-title{min-width:0;flex:1}
+.recall-title strong{font-size:13px;display:block;overflow-wrap:anywhere}
+.recall-title small{font-size:11px}
+.recall-chevron{color:#8ba8bd}
+.recall-item[open] .recall-chevron{transform:rotate(180deg)}
+.recall-body{border-top:1px solid #344c61;padding:12px 15px;font-size:13px}
+.recall-body p{line-height:1.5}
+@media(max-width:700px){#vehicleDetails{padding:12px}#vehicleDetails h2{font-size:19px}.vehicle-id-card{padding:15px}.vehicle-id-specs{gap:14px}.identity-spec strong{font-size:14px}#safetySection{padding:15px}}
+#maintenanceSection .service-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}#maintenanceSection .service-actions button{flex:1 1 190px;min-width:0;white-space:normal;overflow-wrap:break-word}#maintenanceSection .grid{gap:12px}@media(max-width:700px){#maintenanceSection .service-actions{display:grid;grid-template-columns:1fr;gap:9px}#maintenanceSection .service-actions button{width:100%;min-height:46px;padding:10px 12px}#maintenanceSection .grid{grid-template-columns:1fr}#maintenanceSection input,#maintenanceSection select{width:100%;min-width:0}#maintenanceSection h3{margin-top:18px}} .mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))}.cockpit{max-width:950px}.cockpit-head h2{margin:5px 0}.cockpit-kicker{font-size:11px;letter-spacing:.15em;font-weight:800;color:#ffb458}.cockpit-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:20px 0}.cockpit-tabs button{padding:11px 5px;background:#18384b;color:#c4dce8;font-size:12px}.cockpit-tabs button.active{background:#ff9d27;color:#091b27}.cockpit-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.cockpit-fields label{font-size:13px}.cockpit-fields input{margin-top:7px}.cockpit-checks{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.cockpit-checks label{display:flex;align-items:center;gap:9px;font-size:13px}.cockpit-checks input{width:auto;accent-color:#ff9d27}.cockpit-note{font-size:12px;margin:16px 0}.cockpit-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.cockpit-source{padding:13px 0;border-bottom:1px solid #305066;display:flex;justify-content:space-between;gap:12px;align-items:center}.cockpit-source span{font-size:12px;color:#a9c5d2;text-align:right}@media(max-width:700px){.cockpit{padding:16px}.cockpit-fields,.cockpit-checks{grid-template-columns:1fr}.cockpit-actions{display:grid;grid-template-columns:1fr}.cockpit-actions button{width:100%}.mobile-dock button{font-size:10px;padding:5px 0}.mobile-dock button .dock-icon{font-size:18px}} </style><style>.bid-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.bid-pair>div{background:#071b2a;border:1px solid #37647a;border-radius:13px;text-align:center;padding:17px 7px}.bid-pair span{display:block;color:#b6cbd6;font-size:12px;letter-spacing:.08em}.bid-pair strong{display:block;font-size:clamp(23px,5vw,36px);color:#ffad42;margin-top:8px;font-variant-numeric:tabular-nums}#sbToggle{width:100%;margin-bottom:12px}#sbDetail{padding:12px 0}#sbDetail label{display:block;margin:9px 0}#simpleBidView details{margin-top:18px;border-top:1px solid #34566a;padding-top:14px}#simpleBidView summary{cursor:pointer}</style><style>
+/* VINCORE premium auction cockpit preview: original Auction logic remains intact */
+:root{--gold:#ffb45b;--amber:#ff8c24}
+body{background:radial-gradient(ellipse at 20% 0%,#1d2b3c,#070b12 55%)!important}
+.devflag{background:#211a11!important;color:#ffd39a!important;border-bottom:1px solid #ffb45b55}
+header{background:linear-gradient(110deg,#090f19ed,#15202bed)!important;border-bottom:1px solid #f0a74e60!important;box-shadow:0 8px 30px #0008}
+header strong{font-size:clamp(22px,3.5vw,33px)!important;font-weight:900!important;letter-spacing:.02em!important;text-shadow:0 3px 20px #000}
+header strong em{color:#ffad4c!important;font-style:normal!important}
+header .muted{color:#e5cba7!important}
+main{max-width:1220px!important}
+.quicknav{position:sticky;top:75px;z-index:12;background:#0b121be8;backdrop-filter:blur(12px);border:1px solid #ffc46d2e;border-radius:16px;padding:10px!important;margin:12px 0}
+.quicknav a{background:linear-gradient(140deg,#283847,#121d2c)!important;border:1px solid #a97a4a66!important;color:#f5e7d5!important}
+.quicknav a:first-child{background:linear-gradient(135deg,#ffc878,#e98126)!important;color:#19130e!important;font-weight:900}
+#lookup{position:relative;overflow:hidden;isolation:isolate;min-height:420px;display:flex;flex-direction:column;justify-content:end;padding:clamp(24px,5vw,54px)!important;border:1px solid #ffc0717d!important;box-shadow:0 22px 70px #000a,0 0 50px #fa92251a!important}
+#lookup:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,#07101bf5 0%,#09121ee0 36%,#09131e6b 76%),linear-gradient(0deg,#070d15 0%,transparent 65%),url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=85') 70% 53%/cover no-repeat}
+#lookup:after{content:"AUCTION INTELLIGENCE";position:absolute;top:25px;right:24px;font-size:10px;letter-spacing:3px;font-weight:900;color:#ffc57f;background:#1017209c;border:1px solid #ffbe6e6b;padding:9px 12px;border-radius:30px}
+#lookup .home-kicker{color:#ffc16b!important;letter-spacing:3px!important;font-weight:900!important}
+#lookup h2{font-size:clamp(46px,8vw,86px)!important;line-height:.92!important;letter-spacing:-.055em!important;text-transform:uppercase;text-shadow:0 10px 30px #000c;margin:20px 0!important}
+#lookup h2 em{color:#ffac4d!important;font-style:normal}
+#lookup .home-subline{font-size:clamp(15px,2vw,20px)!important;color:#f0d9be!important}
+#form{max-width:720px;background:#08111bd9;border:1px solid #f1a94b6b;padding:17px;border-radius:17px;box-shadow:0 16px 50px #0007}
+#form input{background:#0b1724!important;border-color:#8e775e!important}
+button:not(.secondary){background:linear-gradient(135deg,#ffcc7c,#ef8c2d)!important;color:#20160c!important;font-weight:800!important}
+button.secondary{border:1px solid #c58d4c88!important}
+.panel{background:linear-gradient(150deg,#192633,#0d1722)!important;border:1px solid #4c5965!important;box-shadow:0 18px 40px #0005!important}
+.panel h2{color:#fff1df!important}
+#workspace{border-color:#d99a4c8c!important;background:linear-gradient(135deg,#26313b,#111c29)!important}
+.tile{background:linear-gradient(145deg,#263849,#101b28)!important;border:1px solid #65738277!important;box-shadow:inset 0 1px #ffffff15,0 9px 24px #0005}
+.tabs button.active{background:linear-gradient(135deg,#ffc878,#ef922e)!important}
+.sitefooter{color:#d1b795!important}
+@media(max-width:600px){
+header{position:relative!important}.quicknav{top:0!important}
+#lookup{min-height:500px!important;padding:24px 16px!important}
+#lookup:before{background:linear-gradient(0deg,#07101b 0%,#07101be8 38%,#07101b60 100%),url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=85') 61% 20%/cover no-repeat}
+#lookup:after{top:13px;right:12px;font-size:8px}
+#lookup h2{font-size:clamp(43px,13vw,68px)!important}
+#form{padding:13px}.panel{border-radius:17px!important}
+}
+</style></head>
+<body><div class="devflag">VINCORE PREMIUM PREVIEW · EXISTING AUCTION FUNCTIONS · NO DEALER LOGIN</div><header><strong>LeoNet <em>VINCORE</em><span class="brand-spark" aria-hidden="true">✦</span></strong><div class="muted">Auction cockpit · Mobile-first preview</div></header><main>
+<nav class="quicknav" aria-label="Vehicle sections"><a href="#lookup">Scan VIN</a><a href="#vehicleDetails">Overview</a><a href="#safetySection">Safety</a><a href="#maintenanceSection">Maintenance</a><a href="#vehicleTimeline">Timeline</a><a href="#auctionJournal">Auction journal</a><a href="#workspace">Professional tools</a><a href="#vehicleNotes">Notes</a></nav><div class="panel" id="lookup"><div class="home-kicker"><span class="signal-dot"></span> VEHICLE INTELLIGENCE</div><h2>Every detail.<br><em>One VIN.</em></h2><p class="home-subline">Know what you’re looking at.</p><form id="form"><div class="grid"><input id="vin" maxlength="17" autocomplete="off" spellcheck="false" placeholder="Enter 17-character VIN" required><button type="submit"><span aria-hidden="true">↗</span> Reveal vehicle</button></div><p><button type="button" id="scanVin" class="secondary"><span aria-hidden="true">▣</span> Scan VIN</button></p><div id="cameraPanel" hidden><video id="vinVideo" autoplay playsinline muted style="width:100%;max-height:300px;background:#000;border-radius:12px"></video><p><button type="button" id="stopScan" class="secondary">Stop camera</button></p></div><p id="cameraStatus" class="muted" role="status"></p></form><p id="status" role="status"></p></div>
+<section id="result" hidden><div class="panel" id="vehicleDetails"><h2 id="heading">Vehicle details</h2><div id="tiles" class="grid"></div><p class="muted" id="warnings"></p><a id="nhtsa" target="_blank" rel="noopener noreferrer">View NHTSA decoder</a></div>
+<div class="panel"><h2>History source coverage</h2><table><thead><tr><th>Source</th><th>Current status</th><th>What it tells us</th></tr></thead><tbody>
+<tr><td>NHTSA vPIC</td><td class="tag">Live VIN decode</td><td>Manufacturer-reported identity and specifications</td></tr>
+<tr><td>NHTSA recalls</td><td>Not connected</td><td>Open recalls and safety campaigns</td></tr>
+<tr><td>CARFAX</td><td>Requires licensed access</td><td>Reported accidents, ownership, maintenance and other history</td></tr>
+<tr><td>Manheim</td><td>Requires approved access</td><td>Auction/wholesale valuations and remarketing data</td></tr>
+<tr><td>Repair quality</td><td>Evidence required</td><td>Cannot grade repair workmanship from VIN or accident flag alone</td></tr></tbody></table></div>
+<div class="panel" id="safetySection"><div class="safety-header"><div><div class="eyebrow">SAFETY</div><h2>Recalls & campaigns</h2></div><span aria-hidden="true" class="safety-icon">♢</span></div><p class="muted safety-note">Model-level campaigns only. Confirm VIN-specific status with the manufacturer.</p><div id="recalls">Decode a VIN to check model-level recalls.</div></div>
+<div class="panel" id="maintenanceSection"><h2>Maintenance & service planning</h2><p class="muted">Service intervals below are owner/shop-entered, not automatically extracted from an OEM maintenance schedule. Dates are calculated locally; reminders are displayed when this profile is opened, not sent automatically.</p>
+<div class="grid"><div><label for="miles">Current odometer (miles)</label><input id="miles" type="number" min="0" placeholder="e.g. 112450"></div><div><label for="facility">Preferred service facility</label><input id="facility" placeholder="Shop name"></div><div><label for="contact">Customer contact (optional)</label><input id="contact" placeholder="Email or phone"></div></div>
+<h3>Schedule maintenance</h3><div class="grid"><div><label for="service">Service</label><select id="service"><option>Oil and filter</option><option>Tire rotation</option><option>Brake inspection</option><option>Transmission service</option><option>Coolant service</option><option>Battery inspection</option><option>Other</option></select></div><div><label for="dueDate">Due date</label><input id="dueDate" type="date"></div><div><label for="dueMiles">Due mileage</label><input id="dueMiles" type="number" min="0" placeholder="Optional"></div></div>
+<div class="service-actions"><button type="button" id="addService">+ Add maintenance item</button><button type="button" id="saveProfile" class="secondary">Save vehicle preferences</button></div><p id="maintenanceMessage" class="muted"></p><div id="maintenanceList"></div></div>
+<div class="panel dev-only" id="recordEntry"><div class="eyebrow">Vehicle file · New</div><h2>Add vehicle record</h2><p class="muted">Log inspections, repairs, ownership/stock events, photos or documents as references, and other observations against this VIN. Enter only information you have permission to record.</p><div class="eventgrid"><div><label for="eventDate">Event date</label><input type="date" id="eventDate"></div><div><label for="eventType">Record type</label><select id="eventType"><option>Inspection</option><option>Service</option><option>Repair</option><option>Condition report</option><option>Stock entry</option><option>Stock exit</option><option>Title / registration</option><option>Photo / document reference</option><option>Other</option></select></div><div><label for="eventMiles">Odometer (miles)</label><input type="number" min="0" id="eventMiles" placeholder="Optional"></div><div><label for="eventSource">Source / facility</label><input id="eventSource" placeholder="Who provided this?"></div></div><label for="eventDetails" style="margin-top:12px">What happened?</label><textarea id="eventDetails" rows="3" placeholder="Condition, work performed, observations, document reference, and follow-up"></textarea><div class="rowactions"><button type="button" id="saveVehicleEvent">Save record to VIN</button><button type="button" id="exportVehicleFile" class="secondary">Export VIN file (JSON)</button></div><p class="muted" id="vehicleEventStatus" role="status"></p></div><div class="panel dev-only" id="vehicleTimeline"><div class="eyebrow">VIN-centered record · Development</div><h2>Vehicle timeline</h2><p class="muted">One vehicle identity, many events. Imported history, maintenance, and auction observations can be viewed together. Data stays in this browser; it is not a shared permanent database yet.</p><div id="vehicleTimelineRows" class="eventlist"><p class="muted">Decode a VIN to view its timeline.</p></div></div>
+<div class="panel dev-only" id="auctionJournal"><div class="eyebrow">New · Auction intelligence</div><h2>Auction watchlist & results</h2><p class="muted">Record every vehicle you consider, including ones you don't buy. Preserve the professional estimate, model calculation, and final auction result separately.</p>
+<div class="eventgrid">
+<div><label for="auctionDate">Auction date</label><input id="auctionDate" type="date"></div>
+<div><label for="auctionHouse">Auction / location</label><input id="auctionHouse" placeholder="e.g. Manheim Orlando"></div>
+<div><label for="auctionRun">Lane / run / lot</label><input id="auctionRun" placeholder="e.g. A-104"></div>
+<div><label for="proValue">Professional's maximum bid ($)</label><input id="proValue" type="number" min="0" placeholder="Your estimate"></div>
+<div><label for="modelValue">LeoNet calculated target ($)</label><input id="modelValue" type="number" min="0" placeholder="Optional calculator result"></div>
+<div><label for="auctionResult">Auction outcome</label><select id="auctionResult"><option value="watched">Watched / pending</option><option value="bought">Purchased</option><option value="lost">Outbid / passed</option><option value="unsold">Unsold</option><option value="unknown">Result unknown</option></select></div>
+<div><label for="winningBid">Winning bid ($)</label><input id="winningBid" type="number" min="0" placeholder="If known"></div>
+<div><label for="totalCost">Total acquisition cost ($)</label><input id="totalCost" type="number" min="0" placeholder="If purchased"></div>
+</div>
+<label for="auctionObservation" style="margin-top:12px">Condition / reasoning / source</label><textarea id="auctionObservation" rows="2" placeholder="Why you wanted it, why you passed, who reported the price"></textarea>
+<div class="rowactions"><button type="button" id="recordAuction">Save auction event</button><button type="button" id="useTarget" class="secondary">Use calculator target</button></div><p id="auctionJournalMessage" class="muted" role="status"></p><h3>Recorded appearances</h3><div id="auctionEvents" class="eventlist"></div></div><div class="panel" id="workspace"><h2>Buyer Bid Intelligence</h2><p class="muted">Wholesale and retail maximum bids first. Expand to review, adjust, and record your decision. Data is saved only in this browser.</p>
+<div class="tabs"><button type="button" data-view="historyView">Vehicle history</button><button type="button" class="active" data-view="simpleBidView">Bid intelligence</button><button type="button" data-view="sourcesView">Data connections</button></div>
+<div id="historyView" class="workspaceView" hidden><div id="historySummary" class="grid"></div><h3>Imported vehicle events</h3><div id="historyRows" class="scroll"><p class="muted">No records imported for this VIN.</p></div></div>
+<div id="simpleBidView" class="workspaceView"><h3>Maximum purchase bid</h3><div class="bid-pair"><div><span>WHOLESALE</span><strong id="sbW">—</strong></div><div><span>RETAIL</span><strong id="sbR">—</strong></div></div><p class="muted">Estimates only · No connected market valuation yet.</p><button type="button" class="secondary" id="sbToggle">Review / Adjust ▾</button><div id="sbDetail" hidden><div class="grid"><label>Wholesale selling value ($)<input type="number" id="sbWV" min="0"></label><label>Retail selling value ($)<input type="number" id="sbRV" min="0"></label><label>Wholesale costs ($)<input type="number" id="sbWC" value="500" min="0"></label><label>Retail costs including repairs ($)<input type="number" id="sbRC" value="2500" min="0"></label><label>Wholesale required profit ($)<input type="number" id="sbWP" value="1000" min="0"></label><label>Retail required profit ($)<input type="number" id="sbRP" value="3000" min="0"></label></div><h4>Buyer decision</h4><label>My maximum bid ($)<input id="sbOverride" type="number" min="0"></label><label>Reason / observation<textarea id="sbReason" rows="2"></textarea></label><p><button type="button" id="sbSave">Record decision</button> <button type="button" class="secondary" id="sbExample">Load example</button></p><p class="muted" id="sbMsg"></p></div><details><summary>Decision history <span id="sbCount"></span></summary><div id="sbHistory">No decisions recorded.</div></details><p class="muted">Demo records remain on this device; management sync is not implemented.</p></div><div id="auctionView" class="workspaceView" hidden><p class="muted">Enter a valuation from an authorized source or your own appraisal. These inputs are estimates, not automatically retrieved market values.</p><div class="grid"><div><label for="saleValue">Expected retail sale ($)</label><input id="saleValue" type="number" min="0" value="0"></div><div><label for="bidRepairs">Repairs ($)</label><input id="bidRepairs" type="number" min="0" value="0"></div><div><label for="bidFees">Auction, transportation & selling costs ($)</label><input id="bidFees" type="number" min="0" value="0"></div><div><label for="bidHold">Holding costs ($)</label><input id="bidHold" type="number" min="0" value="0"></div><div><label for="bidTarget">Target profit margin (%)</label><input id="bidTarget" type="number" min="0" max="100" value="30"></div><div><label for="bidMin">Minimum profit margin (%)</label><input id="bidMin" type="number" min="0" max="100" value="15"></div></div><div class="grid" style="margin:16px 0"><div class="tile"><span class="muted">Target bid ceiling</span><div id="targetBid" class="metric good">—</div></div><div class="tile"><span class="muted">Hard-stop bid ceiling</span><div id="hardStop" class="metric warn">—</div></div></div><button type="button" id="saveBid">Save analysis to VIN</button><p id="bidMessage" class="muted"></p></div>
+<div id="sourcesView" class="workspaceView" hidden><h3>Import dealership records</h3><p class="muted">Accepts CSV or JSON exports. Required column: VIN. Optional: date, type, description, amount, source, mileage. Financial amounts: positive for income and negative for expense. Import only records you're authorized to use.</p><label for="sourceFile">Select CSV or JSON export</label><input id="sourceFile" type="file" accept=".csv,.json,text/csv,application/json"><p><button type="button" id="importSource">Import records</button> <button type="button" class="secondary" id="sampleFile">Download sample CSV</button></p><p id="importMessage" class="muted"></p><h3>Account connections</h3><div class="grid"><div class="tile"><strong>Manheim MMR</strong><p class="muted">Licensed auction valuation</p><span class="pill">Not connected</span><p><a href="https://www.manheim.com/" target="_blank" rel="noopener">Provider site</a></p></div><div class="tile"><strong>CARFAX</strong><p class="muted">Licensed vehicle history</p><span class="pill">Not connected</span><p><a href="https://www.carfax.com/" target="_blank" rel="noopener">Provider site</a></p></div><div class="tile"><strong>Dealer exports</strong><p class="muted">Upload CSV/JSON with VIN matching</p><span class="pill">Local import available</span></div></div><p class="muted">Account sign-in and automatic synchronization are not implemented. Never upload credentials or passwords.</p></div></div>
+<div class="panel" id="vehicleNotes"><h2>Vehicle file · Local demonstration</h2><p class="muted">Add your own inspection observations. Saved only in this browser, for this VIN. These are user-entered notes, not verified external history.</p><label for="notes">Inspection / repair observations</label><textarea id="notes" rows="4" placeholder="Document inspection findings, repair evidence, photos to request, and open questions"></textarea><p><button type="button" id="save">Save local notes</button> <span id="saved" class="muted"></span></p></div></section>
+<div class="panel"><h2>What comes next</h2><p>Connect accessible recall, title and market sources; import licensed reports when authorized; build an evidence-backed repair assessment with clear source attribution and uncertainty. No history source should be presented as complete when it isn't.</p><a href="./">Back to dealership prototype</a></div>
+<footer class="sitefooter">LeoNet Vehicle Intelligence · Early-access prototype · Information availability varies by source. Verify important vehicle decisions independently.</footer></main><script>
+document.querySelectorAll('.quicknav a').forEach(link=>link.addEventListener('click',e=>{const target=document.querySelector(link.getAttribute('href'));if(target?.closest('#result')?.hidden){e.preventDefault();document.getElementById('vin').focus();document.getElementById('status').textContent='Decode a VIN first to open its vehicle profile.'}}));
+const vinEl=document.getElementById('vin'),result=document.getElementById('result'),statusEl=document.getElementById('status');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fields=[['ModelYear','Year'],['Make','Make'],['Model','Model'],['Trim','Trim'],['VehicleType','Vehicle type'],['BodyClass','Body class'],['EngineCylinders','Cylinders'],['DisplacementL','Engine (L)'],['FuelTypePrimary','Fuel'],['DriveType','Drive'],['TransmissionStyle','Transmission'],['PlantCountry','Assembly country'],['Manufacturer','Manufacturer']];
+let currentVin='';
+document.getElementById('form').addEventListener('submit',async e=>{e.preventDefault();const vin=vinEl.value.trim().toUpperCase();result.hidden=true;currentVin='';if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)){statusEl.textContent='Enter a valid 17-character VIN (I, O and Q are not permitted).';return}statusEl.textContent='Contacting NHTSA…';try{const response=await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/'+encodeURIComponent(vin)+'?format=json');if(!response.ok)throw Error('NHTSA returned '+response.status);const json=await response.json(),data=json.Results&&json.Results[0];if(!data)throw Error('No vehicle result returned');const errors=(data.ErrorText||'').trim();document.getElementById('heading').textContent=[data.ModelYear,data.Make,data.Model,data.Trim].filter(Boolean).join(' ')||'VIN decode result';const summaryFields=[['BodyClass','Body'],['DisplacementL','Engine'],['FuelTypePrimary','Fuel'],['DriveType','Drive']];const summaryValue=(key)=>{const v=data[key];if(!v||v==='Not Applicable')return 'Not reported';if(key==='DisplacementL'){const liters=Number(v);return Number.isFinite(liters)?liters.toFixed(1)+'L'+(data.EngineCylinders?' · '+esc(data.EngineCylinders)+' cyl':''):esc(v)}return esc(v)};document.getElementById('tiles').innerHTML='<div class="vehicle-id-card"><div class="vehicle-id-top"><span class="eyebrow">VEHICLE IDENTITY</span><span class="identity-status">NHTSA DECODE</span></div><div class="vehicle-id-title">'+esc([data.ModelYear,data.Make,data.Model,data.Trim].filter(Boolean).join(' '))+'</div><div class="vehicle-vin">VIN · '+esc(vin)+'</div><div class="vehicle-id-specs">'+summaryFields.map(([key,label])=>'<div class="identity-spec"><span>'+label+'</span><strong>'+summaryValue(key)+'</strong></div>').join('')+'</div><button type="button" id="expandSpecs" class="identity-expand" aria-expanded="false" aria-controls="extraSpecs">Full specifications <span aria-hidden="true">⌄</span></button><div id="extraSpecs" hidden class="identity-more">'+fields.filter(([key])=>data[key]&&data[key]!=='Not Applicable').map(([key,label])=>'<div><span>'+esc(label)+'</span><strong>'+esc(data[key])+'</strong></div>').join('')+'</div></div>';document.getElementById('expandSpecs').addEventListener('click',e=>{const detail=document.getElementById('extraSpecs');detail.hidden=!detail.hidden;e.currentTarget.setAttribute('aria-expanded',String(!detail.hidden));e.currentTarget.querySelector('span').textContent=detail.hidden?'⌄':'⌃'});document.getElementById('warnings').textContent=errors?'NHTSA decoder messages: '+errors:'Specifications are manufacturer-reported; verify against the physical vehicle.';document.getElementById('nhtsa').href='https://vpic.nhtsa.dot.gov/decoder/Decoder?VIN='+encodeURIComponent(vin);currentVin=vin;showWorkspace();renderMaintenance();loadRecalls(data);document.getElementById('notes').value=localStorage.getItem('leonet_vin_notes_'+vin)||'';document.getElementById('saved').textContent='';result.hidden=false;statusEl.textContent='Vehicle profile ready.';document.querySelector('[data-dock="vehicle"]')?.click();}catch(err){statusEl.textContent='Lookup failed: '+err.message+'. Try again later.'}});
+document.getElementById('save').addEventListener('click',()=>{if(!currentVin)return;try{localStorage.setItem('leonet_vin_notes_'+currentVin,document.getElementById('notes').value);document.getElementById('saved').textContent='Saved locally for '+currentVin}catch(e){document.getElementById('saved').textContent='Could not save notes: '+e.message}});
+
+const profileKey=()=> 'leonet_vin_profile_'+currentVin;
+const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(profileKey())||'{}')}catch{return {}}};
+const saveProfileData=p=>{localStorage.setItem(profileKey(),JSON.stringify(p))};
+const todayLocal=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+function renderMaintenance(){if(!currentVin)return;const p=loadProfile();document.getElementById('miles').value=p.miles||'';document.getElementById('facility').value=p.facility||'';document.getElementById('contact').value=p.contact||'';const list=p.services||[];document.getElementById('maintenanceList').innerHTML=list.length?'<table><thead><tr><th>Service</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody>'+list.map((s,i)=>{const lateDate=s.date&&s.date<=todayLocal(),lateMiles=s.miles&&Number(p.miles)>=Number(s.miles);const due=lateDate||lateMiles;return '<tr><td>'+esc(s.name)+'</td><td>'+esc(s.date||'No date')+(s.miles?' · '+esc(s.miles)+' mi':'')+'</td><td class="'+(due?'tag':'muted')+'">'+(s.completed?'Completed':due?'Due / overdue':'Upcoming')+'</td><td>'+(s.completed?'—':'<button type="button" data-complete="'+i+'">Mark done</button>')+'</td></tr>'}).join('')+'</tbody></table>':'<p class="muted">No maintenance items yet.</p>';document.querySelectorAll('[data-complete]').forEach(b=>b.addEventListener('click',()=>{const p=loadProfile();const item=p.services[Number(b.dataset.complete)];if(item){item.completed=true;item.completedAt=todayLocal();saveProfileData(p);renderMaintenance()}}));}
+document.getElementById('saveProfile').addEventListener('click',()=>{if(!currentVin)return;const p=loadProfile();p.miles=document.getElementById('miles').value;p.facility=document.getElementById('facility').value.trim();p.contact=document.getElementById('contact').value.trim();try{saveProfileData(p);renderMaintenance();document.getElementById('maintenanceMessage').textContent='Vehicle preferences saved in this browser.'}catch(e){document.getElementById('maintenanceMessage').textContent='Save failed: '+e.message}});
+document.getElementById('addService').addEventListener('click',()=>{if(!currentVin)return;const name=document.getElementById('service').value,date=document.getElementById('dueDate').value,miles=document.getElementById('dueMiles').value;if(!date&&!miles){document.getElementById('maintenanceMessage').textContent='Enter a due date or due mileage.';return}const p=loadProfile();p.miles=document.getElementById('miles').value;p.facility=document.getElementById('facility').value.trim();p.contact=document.getElementById('contact').value.trim();p.services=p.services||[];p.services.push({name,date,miles,completed:false});try{saveProfileData(p);document.getElementById('dueDate').value='';document.getElementById('dueMiles').value='';renderMaintenance();document.getElementById('maintenanceMessage').textContent='Maintenance item saved.'}catch(e){document.getElementById('maintenanceMessage').textContent='Save failed: '+e.message}});
+async function loadRecalls(d){const el=document.getElementById('recalls');el.textContent='Checking NHTSA model recalls…';try{const url='https://api.nhtsa.gov/recalls/recallsByVehicle?make='+encodeURIComponent(d.Make)+'&model='+encodeURIComponent(d.Model)+'&modelYear='+encodeURIComponent(d.ModelYear);const r=await fetch(url);if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();const rows=j.results||j.Results||[];el.innerHTML=rows.length?'<div class="recall-count">'+rows.length+' model-level campaign'+(rows.length===1?'':'s')+' found</div><div class="recall-list">'+rows.slice(0,30).map((x,i)=>'<details class="recall-item"><summary><span class="recall-number">'+String(i+1).padStart(2,'0')+'</span><span class="recall-title"><strong>'+esc(x.Component||'Recall campaign')+'</strong><small>'+esc(x.NHTSACampaignNumber||'Campaign number unavailable')+'</small></span><span class="recall-chevron">⌄</span></summary><div class="recall-body"><div><b>Summary</b><p>'+esc(x.Summary||'No summary provided')+'</p></div><div><b>Remedy</b><p>'+esc(x.Remedy||'Not reported')+'</p></div><p class="muted">This listing does not establish whether the recall is open on this VIN.</p></div></details>').join('')+'</div>':'<p>No model-level recalls returned. This does not confirm VIN-specific recall clearance.</p>'}catch(e){el.textContent='Recall data could not be loaded automatically ('+e.message+'). Check NHTSA directly for VIN-specific status.'}}
+
+
+const storeKey='leonet_vehicle_imports_v1';
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+function getImports(){try{const a=JSON.parse(localStorage.getItem(storeKey)||'[]');return Array.isArray(a)?a:[]}catch{return []}}
+function setImports(a){localStorage.setItem(storeKey,JSON.stringify(a))}
+function csvParse(s){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<s.length;i++){const c=s[i];if(c==='"'){if(quoted&&s[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);if(rows.length<2)return [];const keys=rows.shift().map(x=>x.trim().toLowerCase());return rows.map(r=>Object.fromEntries(keys.map((k,i)=>[k,(r[i]||'').trim()])))}
+function normalizeRecord(r){const obj=Object.fromEntries(Object.entries(r).map(([k,v])=>[k.toLowerCase().trim(),v]));const vin=String(obj.vin||'').trim().toUpperCase();if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin))return null;const amount=Number(String(obj.amount||'0').replace(/[$,]/g,''));return {vin,date:String(obj.date||''),type:String(obj.type||'Record').slice(0,100),description:String(obj.description||'').slice(0,800),amount:Number.isFinite(amount)?amount:0,source:String(obj.source||'Imported export').slice(0,100),mileage:String(obj.mileage||'').slice(0,30)}}
+function showWorkspace(){if(!currentVin)return;const rows=getImports().filter(x=>x.vin===currentVin);const income=rows.reduce((a,r)=>a+Math.max(0,r.amount),0),expense=rows.reduce((a,r)=>a+Math.max(0,-r.amount),0);document.getElementById('historySummary').innerHTML='<div class="tile"><div class="muted">Imported records</div><div class="metric">'+rows.length+'</div></div><div class="tile"><div class="muted">Recorded income</div><div class="metric good">'+money(income)+'</div></div><div class="tile"><div class="muted">Recorded expenses</div><div class="metric warn">'+money(expense)+'</div></div><div class="tile"><div class="muted">Net of imported transactions</div><div class="metric">'+money(income-expense)+'</div></div>';document.getElementById('historyRows').innerHTML=rows.length?'<table><thead><tr><th>Date</th><th>Type</th><th>Details</th><th>Amount</th><th>Source</th></tr></thead><tbody>'+rows.sort((a,b)=>b.date.localeCompare(a.date)).map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.type)+'</td><td>'+esc(x.description)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.source)+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">No imported records for this VIN yet.</p>';const p=loadProfile();const b=p.bid||{};for(const [id,key] of [['saleValue','sale'],['bidRepairs','repairs'],['bidFees','fees'],['bidHold','hold'],['bidTarget','target'],['bidMin','minimum']]){if(b[key]!==undefined)document.getElementById(id).value=b[key]}calcBid()}
+function calcBid(){const n=id=>Math.max(0,Number(document.getElementById(id).value)||0);const sale=n('saleValue'),costs=n('bidRepairs')+n('bidFees')+n('bidHold');document.getElementById('targetBid').textContent=money(Math.max(0,sale*(1-Math.min(100,n('bidTarget'))/100)-costs));document.getElementById('hardStop').textContent=money(Math.max(0,sale*(1-Math.min(100,n('bidMin'))/100)-costs))}
+document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.workspaceView').forEach(x=>x.hidden=x.id!==btn.dataset.view)}));
+['saleValue','bidRepairs','bidFees','bidHold','bidTarget','bidMin'].forEach(id=>document.getElementById(id).addEventListener('input',calcBid));
+document.getElementById('saveBid').addEventListener('click',()=>{if(!currentVin)return;const p=loadProfile();p.bid={sale:document.getElementById('saleValue').value,repairs:document.getElementById('bidRepairs').value,fees:document.getElementById('bidFees').value,hold:document.getElementById('bidHold').value,target:document.getElementById('bidTarget').value,minimum:document.getElementById('bidMin').value};try{saveProfileData(p);document.getElementById('bidMessage').textContent='Bid analysis saved locally for '+currentVin}catch(e){document.getElementById('bidMessage').textContent='Save failed: '+e.message}});
+document.getElementById('importSource').addEventListener('click',async()=>{const el=document.getElementById('importMessage'),file=document.getElementById('sourceFile').files[0];if(!file){el.textContent='Choose a CSV or JSON file first.';return}if(file.size>2000000){el.textContent='Maximum import file size is 2 MB.';return}try{const raw=await file.text();const data=file.name.toLowerCase().endsWith('.json')?JSON.parse(raw):csvParse(raw);if(!Array.isArray(data))throw Error('Expected a JSON array or CSV rows');const valid=data.map(normalizeRecord).filter(Boolean);if(!valid.length)throw Error('No valid VIN rows found. Include a VIN column.');const existing=getImports();const seen=new Set(existing.map(x=>JSON.stringify(x)));let added=0;for(const x of valid){const key=JSON.stringify(x);if(!seen.has(key)){existing.push(x);seen.add(key);added++}}setImports(existing);el.textContent=added+' records imported ('+(data.length-valid.length)+' skipped invalid VIN rows). Data stored only in this browser.';showWorkspace()}catch(e){el.textContent='Import failed: '+e.message}});
+document.getElementById('sampleFile').addEventListener('click',()=>{const content='vin,date,type,description,amount,source,mileage\n2HJYK16587H520681,2026-11-20,Inspection,Example inspection,-85,Dealer export,120000\n2HJYK16587H520681,2026-11-21,Service,Example service,-240,Dealer export,120050';const blob=new Blob([content],{type:'text/csv'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='leonet-vehicle-import-template.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+
+
+let vinStream=null,scanActive=false,scanFrame=0,detector=null;
+const cameraPanel=document.getElementById('cameraPanel'),video=document.getElementById('vinVideo'),cameraStatus=document.getElementById('cameraStatus');
+function stopVinCamera(){scanActive=false;if(scanFrame)cancelAnimationFrame(scanFrame);scanFrame=0;if(vinStream){vinStream.getTracks().forEach(t=>t.stop());vinStream=null}video.srcObject=null;cameraPanel.hidden=true}
+async function scanVinFrame(){if(!scanActive||!detector)return;try{if(video.readyState>=2){const codes=await detector.detect(video);for(const code of codes){const candidate=String(code.rawValue||'').toUpperCase().replace(/[^A-Z0-9]/g,'');const match=candidate.match(/[A-HJ-NPR-Z0-9]{17}/);if(match){vinEl.value=match[0];stopVinCamera();cameraStatus.textContent='VIN barcode captured. Confirm the VIN against the vehicle, then decode.';vinEl.focus();return}}}}catch(e){cameraStatus.textContent='Scanning error: '+e.message;stopVinCamera();return}if(scanActive)scanFrame=requestAnimationFrame(scanVinFrame)}
+document.getElementById('scanVin').addEventListener('click',async()=>{if(scanActive)return;if(!navigator.mediaDevices?.getUserMedia){cameraStatus.textContent='Camera access is unavailable. Enter the VIN manually.';return}if(!('BarcodeDetector' in window)){cameraStatus.textContent='This browser does not support VIN barcode scanning. Try a recent Chrome or Edge browser, or enter the VIN manually.';return}try{const formats=await BarcodeDetector.getSupportedFormats();const selected=['code_39','code_128','pdf417','data_matrix','qr_code'].filter(x=>formats.includes(x));if(!selected.length)throw Error('No supported VIN barcode formats');detector=new BarcodeDetector({formats:selected});vinStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});video.srcObject=vinStream;cameraPanel.hidden=false;scanActive=true;cameraStatus.textContent='Aim at the VIN barcode on the vehicle or paperwork. Camera images stay on your device.';await video.play();scanFrame=requestAnimationFrame(scanVinFrame)}catch(e){stopVinCamera();cameraStatus.textContent='Camera could not start: '+e.message+'. You can still enter the VIN manually.'}});
+document.getElementById('stopScan').addEventListener('click',()=>{stopVinCamera();cameraStatus.textContent='Camera stopped.'});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&scanActive)stopVinCamera()});
+window.addEventListener('pagehide',stopVinCamera);
+
+// Development-only VIN auction journal; records are stored per browser, not synchronized.
+const auctionFields=['auctionDate','auctionHouse','auctionRun','proValue','modelValue','auctionResult','winningBid','totalCost','auctionObservation'];
+const auctionKey=vin=>'leonet_auction_events_v1_'+vin;
+function auctionRecords(){if(!currentVin)return[];try{const v=JSON.parse(localStorage.getItem(auctionKey(currentVin))||'[]');return Array.isArray(v)?v:[]}catch{return[]}}
+function renderAuctionJournal(){
+ const rows=document.getElementById('auctionEvents'),timeline=document.getElementById('vehicleTimelineRows');
+ if(!currentVin){rows.innerHTML='<p class="muted">Decode a VIN to begin tracking auction appearances.</p>';timeline.innerHTML='<p class="muted">Decode a VIN to view its timeline.</p>';return}
+ const auctions=auctionRecords().sort((a,b)=>String(b.auctionDate).localeCompare(String(a.auctionDate)));
+ rows.innerHTML=auctions.length?auctions.map(e=>'<div class="event"><div class="eventtop"><strong>'+esc(e.auctionHouse||'Auction')+'</strong><span class="eventpill">'+esc(e.auctionResult)+'</span></div><div class="eventmeta">'+esc(e.auctionDate||'Date unknown')+' · '+esc(e.auctionRun||'No lot reference')+'</div><div class="eventmeta">Professional: '+moneyOrDash(e.proValue)+' · Calculated: '+moneyOrDash(e.modelValue)+' · Winning bid: '+moneyOrDash(e.winningBid)+' · Total acquisition: '+moneyOrDash(e.totalCost)+'</div><div class="eventmeta">'+esc(e.auctionObservation||'No notes')+'</div></div>').join(''):'<p class="muted">No auction appearances saved for this VIN.</p>';
+ const manual=vehicleEvents();
+ const imported=getImports().filter(x=>x.vin===currentVin).map(x=>({date:x.date,type:x.type||'Imported',detail:x.description,source:x.source,mileage:x.mileage,origin:'Imported'}));
+ const all=[...manual.map(x=>({...x,origin:'User entry'})),...imported,...auctions.map(x=>({date:x.auctionDate,type:'Auction · '+x.auctionResult,detail:[x.auctionHouse,x.auctionRun,x.auctionObservation].filter(Boolean).join(' · '),source:'Auction journal',origin:'Auction'}))].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ timeline.innerHTML=all.length?all.map(x=>'<div class="event"><div class="eventtop"><strong>'+esc(x.type||'Record')+'</strong><span class="eventpill">'+esc(x.origin)+'</span></div><div class="eventmeta">'+esc(x.date||'Undated')+(x.mileage?' · '+esc(x.mileage)+' miles':'')+' · '+esc(x.source||'Source not provided')+'</div><div style="margin-top:7px">'+esc(x.detail||'No description')+'</div></div>').join(''):'<p class="muted">No records yet. Add an event, import history, or save an auction appearance.</p>';
+}
+function moneyOrDash(v){return v===''||v===null||v===undefined?'—':'$'+Number(v).toLocaleString('en-US')}
+document.getElementById('recordAuction').addEventListener('click',()=>{
+ const msg=document.getElementById('auctionJournalMessage');
+ if(!currentVin){msg.textContent='Decode a VIN before saving an auction event.';return}
+ const e={};for(const id of auctionFields)e[id]=document.getElementById(id).value.trim();
+ if(!e.auctionDate||!e.auctionHouse){msg.textContent='Enter the auction date and auction name.';return}
+ if(e.auctionResult==='bought'&&!e.totalCost)msg.textContent='Saved. Add total acquisition cost later for accurate profitability.';
+ else msg.textContent='Auction event saved locally for this VIN.';
+ const events=auctionRecords();events.push({...e,createdAt:new Date().toISOString()});try{localStorage.setItem(auctionKey(currentVin),JSON.stringify(events));renderAuctionJournal()}catch{msg.textContent='Unable to save. Browser storage may be unavailable or full.'}
+});
+document.getElementById('useTarget').addEventListener('click',()=>{
+ const v=document.getElementById('targetBid').textContent.replace(/[^0-9.]/g,'');
+ if(v){document.getElementById('modelValue').value=v;document.getElementById('auctionJournalMessage').textContent='Copied calculated target. This is a formula result, not an AI valuation.'}
+ else document.getElementById('auctionJournalMessage').textContent='Enter calculator inputs first to calculate a target.';
+});
+
+const vehicleEventKey=vin=>'leonet_vehicle_events_v1_'+vin;
+function vehicleEvents(){if(!currentVin)return[];try{const x=JSON.parse(localStorage.getItem(vehicleEventKey(currentVin))||'[]');return Array.isArray(x)?x:[]}catch{return[]}}
+document.getElementById('saveVehicleEvent').addEventListener('click',()=>{
+ const s=document.getElementById('vehicleEventStatus');if(!currentVin){s.textContent='Decode a VIN first.';return}
+ const v=id=>document.getElementById(id).value.trim();
+ const entry={date:v('eventDate'),type:v('eventType'),mileage:v('eventMiles'),source:v('eventSource'),detail:v('eventDetails'),createdAt:new Date().toISOString()};
+ if(!entry.date||!entry.detail){s.textContent='Enter a date and description.';return}
+ try{const records=vehicleEvents();records.push(entry);localStorage.setItem(vehicleEventKey(currentVin),JSON.stringify(records));s.textContent='Vehicle record saved locally.';document.getElementById('eventDetails').value='';renderAuctionJournal()}catch(e){s.textContent='Save failed: '+e.message}
+});
+document.getElementById('exportVehicleFile').addEventListener('click',()=>{
+ const s=document.getElementById('vehicleEventStatus');if(!currentVin){s.textContent='Decode a VIN first.';return}
+ const data={format:'LeoNet VIN file prototype v1',vin:currentVin,exportedAt:new Date().toISOString(),vehicleRecords:vehicleEvents(),auctionAppearances:auctionRecords(),importedRecords:getImports().filter(x=>x.vin===currentVin),profile:loadProfile()};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='leonet-'+currentVin+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);s.textContent='VIN file exported. This includes browser-local information, not licensed third-party reports.';
+});
+document.getElementById('importSource').addEventListener('click',()=>setTimeout(renderAuctionJournal,0));
+
+const oldRender=window.renderAuctionJournal;
+const journalObserver=new MutationObserver(()=>{if(!result.hidden)renderAuctionJournal()});
+journalObserver.observe(result,{attributes:true,attributeFilter:['hidden']});
+renderAuctionJournal();
+</script><nav class="mobile-dock" aria-label="Mobile navigation"><button type="button" data-dock="top" class="active"><span class="dock-icon">⌂</span>Home</button><button type="button" data-dock="vehicle"><span class="dock-icon">▤</span>Vehicle</button><button type="button" data-dock="history"><span class="dock-icon">◴</span>History</button><button type="button" data-dock="tools"><span class="dock-icon">◇</span>Bids</button><button type="button" data-dock="cockpit"><span class="dock-icon">⚙</span>Cockpit</button></nav><script>
+(function(){
+ const nav=document.querySelector('.mobile-dock');
+ const buttons=[...nav.querySelectorAll('[data-dock]')];
+ const main=document.querySelector('main');
+ const result=document.getElementById('result');
+ const lookup=document.getElementById('lookup');
+ const hero=document.querySelector('.hero');
+ const next=document.querySelector('#result + .panel');
+ const sections={};
+ const make=(name)=>{const el=document.createElement('div');el.className='mobile-screen';el.dataset.screen=name;sections[name]=el;return el};
+ const home=make('top'),vehicle=make('vehicle'),history=make('history'),tools=make('tools'),cockpitScreen=make('cockpit');
+ main.insertBefore(home,lookup);
+ home.append(lookup);
+ main.insertBefore(vehicle,result);
+ main.insertBefore(history,result);
+ main.insertBefore(tools,result);
+ main.insertBefore(cockpitScreen,result);
+ cockpitScreen.innerHTML="<section class=\"panel cockpit\" id=\"cockpit\"><div class=\"cockpit-head\"><span class=\"cockpit-kicker\">DEALER CONFIGURATION</span><h2>Buyer Cockpit</h2><p class=\"muted\">Set the rules behind your auction evaluations. Saved on this device for now.</p></div>\n<div class=\"cockpit-tabs\" role=\"tablist\" aria-label=\"Cockpit sections\"><button type=\"button\" class=\"active\" data-cockpit-tab=\"economics\">Economics</button><button type=\"button\" data-cockpit-tab=\"criteria\">Buy rules</button><button type=\"button\" data-cockpit-tab=\"connections\">Data sources</button></div>\n<form id=\"cockpitForm\"><div data-cockpit-panel=\"economics\"><h3>Shop economics</h3><div class=\"cockpit-fields\"><label>Retail labor rate ($/hr)<input name=\"retailLabor\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter rate\"></label><label>Internal labor cost ($/hr)<input name=\"laborCost\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter cost\"></label><label>Average holding cost ($/day)<input name=\"holdingDay\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter cost\"></label><label>Default transport cost ($)<input name=\"transport\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter cost\"></label><label>Default auction fees ($)<input name=\"auctionFees\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter fees\"></label><label>Expected selling cost ($)<input name=\"sellingCost\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter cost\"></label></div><p class=\"muted cockpit-note\">These are assumptions, not verified reimbursement rates. Vehicle-specific amounts can differ.</p></div>\n<div data-cockpit-panel=\"criteria\" hidden><h3>Acquisition rules</h3><div class=\"cockpit-fields\"><label>Target profit margin (%)<input name=\"targetMargin\" type=\"number\" min=\"0\" max=\"100\" step=\".1\" placeholder=\"e.g. 30\"></label><label>Minimum projected profit ($)<input name=\"minProfit\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Enter minimum\"></label><label>Maximum purchase price ($)<input name=\"maxPurchase\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Optional\"></label><label>Maximum vehicle mileage<input name=\"maxMileage\" type=\"number\" min=\"0\" step=\"1\" placeholder=\"Optional\"></label><label>Maximum repair budget ($)<input name=\"maxRepairs\" type=\"number\" min=\"0\" step=\".01\" placeholder=\"Optional\"></label><label>Maximum holding days<input name=\"maxHoldDays\" type=\"number\" min=\"0\" step=\"1\" placeholder=\"Optional\"></label></div><h3>Flag for buyer review</h3><div class=\"cockpit-checks\"><label><input name=\"flagOpenRecalls\" type=\"checkbox\"> Open or unresolved recalls</label><label><input name=\"flagTitle\" type=\"checkbox\"> Title or branding concerns</label><label><input name=\"flagMileage\" type=\"checkbox\"> Mileage discrepancies</label><label><input name=\"flagDamage\" type=\"checkbox\"> Reported damage or accidents</label></div><p class=\"muted cockpit-note\">Rules are stored now; automated pass/fail scoring is not yet connected.</p></div>\n<div data-cockpit-panel=\"connections\" hidden><h3>Intelligence sources</h3><p class=\"muted\">The app already uses public NHTSA VIN and model recall data. Paid-provider links require approved integrations; no account connection is active.</p><div class=\"cockpit-source\"><strong>NHTSA · Public</strong><span>Available in VIN lookup</span></div><div class=\"cockpit-source\"><strong>Manheim / MMR</strong><span>Integration not configured</span></div><div class=\"cockpit-source\"><strong>CARFAX</strong><span>Integration not configured</span></div><div class=\"cockpit-source\"><strong>AutoCheck</strong><span>Integration not configured</span></div><div class=\"cockpit-source\"><strong>Identifix / repair data</strong><span>Integration not configured</span></div><div class=\"cockpit-source\"><strong>Manufacturer warranty data</strong><span>Integration not configured</span></div><p class=\"muted cockpit-note\">We will add authorized connection methods provider by provider. Password collection is intentionally not included.</p></div>\n<div class=\"cockpit-actions\"><button type=\"submit\">Save cockpit settings</button><button type=\"button\" class=\"secondary\" id=\"cockpitReset\">Restore defaults</button></div><p id=\"cockpitStatus\" class=\"muted\" role=\"status\"></p></form></section>";
+ const move=(id,dest)=>{const el=document.getElementById(id);if(el)dest.appendChild(el)};
+ ['vehicleDetails','safetySection','maintenanceSection'].forEach(id=>move(id,vehicle));
+ ['recordEntry','vehicleTimeline','vehicleNotes'].forEach(id=>move(id,history));
+ ['workspace','auctionJournal'].forEach(id=>move(id,tools));
+ // Keep any remaining legacy panels in their appropriate screen.
+ while(result.firstChild)vehicle.appendChild(result.firstChild);
+ if(next)tools.appendChild(next);
+ // Screens replace the original result wrapper only on mobile; preserve VIN gating.
+ const show=name=>{
+  const mobile=matchMedia('(max-width:700px)').matches;
+  for(const [key,el] of Object.entries(sections))el.hidden=mobile&&key!==name;
+  buttons.forEach(b=>b.classList.toggle('active',b.dataset.dock===name));
+  if(mobile)window.scrollTo({top:0,behavior:'instant'});
+ };
+ buttons.forEach(b=>b.addEventListener('click',()=>show(b.dataset.dock)));
+ const originalHidden=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+ // Existing decode controls result.hidden; use it to guard non-home screens.
+ const observer=new MutationObserver(()=>{
+  const decoded=!result.hidden;
+  [vehicle,history,tools].forEach(el=>el.dataset.hasVehicle=String(decoded));
+ });
+ observer.observe(result,{attributes:true,attributeFilter:['hidden']});
+ const sheet=document.createElement('style');
+ sheet.textContent='@media(max-width:700px){.mobile-screen[data-has-vehicle="false"]>.panel:not(#workspace):not(#auctionJournal){display:none}}';
+ document.head.appendChild(sheet);
+ [vehicle,history,tools].forEach(el=>el.dataset.hasVehicle=String(!result.hidden));
+ window.addEventListener('resize',()=>{const active=buttons.find(b=>b.classList.contains('active'));show(active?.dataset.dock||'top')});
+ show('top');
+})();
+</script><script>
+(function(){
+const form=document.getElementById('cockpitForm');const key='leonet_dealer_cockpit_v1';const status=document.getElementById('cockpitStatus');
+const defaults={flagOpenRecalls:true,flagTitle:true,flagMileage:true,flagDamage:true};
+function load(){let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{};for(const field of form.elements){if(!field.name)continue;field.type==='checkbox'?field.checked=(saved[field.name]??defaults[field.name]??false):field.value=(saved[field.name]??'')}}
+load();
+document.querySelectorAll('[data-cockpit-tab]').forEach(btn=>btn.addEventListener('click',()=>{const tab=btn.dataset.cockpitTab;document.querySelectorAll('[data-cockpit-tab]').forEach(b=>b.classList.toggle('active',b===btn));document.querySelectorAll('[data-cockpit-panel]').forEach(p=>p.hidden=p.dataset.cockpitPanel!==tab)}));
+form.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;const values={};for(const field of form.elements){if(!field.name)continue;values[field.name]=field.type==='checkbox'?field.checked:(field.value===''?null:Number(field.value))}try{localStorage.setItem(key,JSON.stringify(values));status.textContent='Saved on this device. These rules are not yet applied automatically to auction valuations.'}catch{status.textContent='Unable to save settings on this device.'}});
+document.getElementById('cockpitReset').addEventListener('click',()=>{if(!confirm('Clear saved cockpit settings on this device?'))return;localStorage.removeItem(key);load();status.textContent='Defaults restored on this device.'});
+})();
+</script><script>(function(){const g=id=>document.getElementById(id),v=id=>Math.max(0,Number(g(id).value)||0),fmt=n=>String.fromCharCode(36)+Math.round(n).toLocaleString('en-US'),ids=['sbWV','sbRV','sbWC','sbRC','sbWP','sbRP'],key='leonet_bid_decisions_v1',vin=()=>g('vin').value.trim().toUpperCase()||'UNASSIGNED';function read(){try{const x=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}function calc(){const w=v('sbWV'),r=v('sbRV'),a=w?Math.max(0,w-v('sbWC')-v('sbWP')):null,b=r?Math.max(0,r-v('sbRC')-v('sbRP')):null;g('sbW').textContent=a===null?'—':fmt(a);g('sbR').textContent=b===null?'—':fmt(b);return {wholesale:a,retail:b}}function history(){const list=read().filter(x=>x.vin===vin()).reverse();g('sbCount').textContent='('+list.length+')';const el=g('sbHistory');el.replaceChildren();if(!list.length){el.textContent='No decisions recorded for this VIN.';return}list.forEach(x=>{const d=document.createElement('p');d.textContent=new Date(x.at).toLocaleString()+' | Wholesale '+(x.wholesale===null?'—':fmt(x.wholesale))+' | Retail '+(x.retail===null?'—':fmt(x.retail))+' | Buyer '+(x.override===null?'no override':fmt(x.override))+' | '+x.reason;el.append(d)})}ids.forEach(id=>g(id).addEventListener('input',calc));g('sbToggle').addEventListener('click',()=>{g('sbDetail').hidden=!g('sbDetail').hidden;g('sbToggle').textContent=g('sbDetail').hidden?'Review / Adjust ▾':'Hide details ▴'});g('sbExample').addEventListener('click',()=>{[14200,18900,500,2500,1000,3000].forEach((n,i)=>g(ids[i]).value=n);calc();g('sbMsg').textContent='Fictional sample loaded.'});g('sbSave').addEventListener('click',()=>{const c=calc();if(c.wholesale===null&&c.retail===null){g('sbMsg').textContent='Enter at least one selling value.';return}const raw=g('sbOverride').value;const x={...c,vin:vin(),at:new Date().toISOString(),override:raw===''?null:v('sbOverride'),reason:g('sbReason').value.trim(),inputs:ids.map(id=>v(id))};try{const a=read();a.push(x);localStorage.setItem(key,JSON.stringify(a));g('sbMsg').textContent='Saved locally.';history()}catch(e){g('sbMsg').textContent='Unable to save.'}});g('vin').addEventListener('change',history);calc();history()})();</script></body></html>
