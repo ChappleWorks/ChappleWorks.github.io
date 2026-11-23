@@ -2,24 +2,25 @@
 
 ## What was completed
 
-Extended the existing dealer workspace on feature/vincore-dealer-accounts. Added VIN lookup, recall display, barcode capture with manual fallback, dealer-private watchlists and notes, bid caps, manual events and expenses, inventory/run-list uploads and legacy archive import. Dealer scope is enforced in PostgreSQL. An event and its status update use the same database transaction. The public Auction files were preserved.
+The dealer workspace remains on feature/vincore-dealer-accounts. Added staging instructions, three fictional account assignments, inventory/run-list fixtures and a credential-gated hosted acceptance runner. Expanded the local tests to cover cross-dealer import rejection, sign-out and sign-in recovery, and actual embedded PostgreSQL backup and restore. The original Auction application and public preview files were preserved.
 
 ## What was verified
 
-- Embedded PostgreSQL applied the original schema and upgrade with a simulated Supabase auth identity. Tests covered no anonymous reads, cross-dealer read/write denial, mismatched dealer/vehicle rejection, same-dealer teammate edits, immutable event records, transaction rollback on rejected outcomes, duplicate import handling, and inventory separation for the same VIN.
-- A 390px Edge test with mocked services covered unconfigured behavior, sign-in/out, VIN lookup and recalls, cap selection, saving/editing a vehicle, manual bid/win/expenses, inventory match, run-list duplicate protection, local notes migration, and reopening records.
-- Pure logic tests covered calculation and import validation, including legacy preservation. These checks establish local behavior.
+- Four local automated tests passed. Embedded PostgreSQL applied the migrations, rejected cross-dealer reads, writes and imports, and applied atomic bid and purchase transitions. The fixture SQL rolled back without confirmed accounts, then assigned exactly three memberships when run twice with fictional identities.
+- A separate local PostgreSQL instance loaded a data-directory archive. The recovered database preserved purchase status, bid and expense entries, inventory and dealer isolation.
+- The 390-pixel Edge test used mocked Supabase and NHTSA. It exercised sign-in, VIN research, maximum bid, preparation, bid, purchase, expenses, list imports and VIN matching, sign-out, fresh sign-in, and record recovery.
+- The hosted runner passed syntax checking and refused to connect without explicit staging settings. Hosted API checks were not run.
 
 ## What is still pending
 
-Hosted Supabase authentication, PostgREST behavior, deployment-origin configuration, real mobile camera, NHTSA requests from the signed-in workspace, Mike's actual files and workflow, and backup restore remain unverified. Cross-dealer shared vehicle history and future departments are later milestones. No deployment or merge was performed.
+No accessible Supabase staging configuration or credentials were available. A local full Supabase stack was not available on this machine. Real password authentication, PostgREST persistence and isolation, hosted backup restore, and phone testing are pending. No merge, deployment or live preview change was performed.
 
 ## What Chris needs to decide
 
-Approve the no-spend staging setup when ready and identify Mike's exact build, test device, and representative authorized exports. Confirm who can approve migration of existing dealer records and who signs off on the pilot.
+Identify the isolated no-spend project and staging origin that may be used. Confirm Mike's phone and browser plus a fictional or blank export in the actual inventory and auction formats.
 
 ## Next recommended action
 
-Follow the [setup and release gate](dealer/README.md) in isolated staging. Run two dealer sessions plus one same-dealer teammate with fictional data and verify database behavior through the real API before entrusting it with dealer records.
+Follow the [staging and phone runbook](dealer/pilot/STAGING.md). Provision the three test users, run the hosted API check, verify recovery in an isolated restore target, then rehearse on Mike's device with fictional data. Resolve and retest blockers before asking Chris to approve the pilot.
 
-[Draft PR and source/test evidence](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)
+[Draft PR and implementation evidence](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)

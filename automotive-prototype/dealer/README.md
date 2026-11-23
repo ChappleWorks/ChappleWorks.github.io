@@ -26,3 +26,5 @@ From dealer/tests, run npm ci and npm test. The browser suite uses local Edge on
 - Restore a test backup and confirm inventory, bid history and purchases. Confirm Mike’s source build and sample files and get Chris’s approval before a dealer pilot. Keep real dealer records out of the public preview.
 
 [Current project status](../STATUS.md) · [Draft PR #1](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1)
+
+[Staging verification and Mike's phone rehearsal](pilot/STAGING.md)

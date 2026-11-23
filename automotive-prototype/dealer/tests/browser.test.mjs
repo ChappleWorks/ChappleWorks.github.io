@@ -9,7 +9,8 @@ export function createClient(){
   const user={id:'test-user',email:'dealer@example.test'};
   const signedIn=()=>localStorage.getItem('fixture-session')==='yes';
   const rows=JSON.parse(localStorage.getItem('fixture-vehicles')||'[]');
-  const inventory=[], events=[];
+  const inventory=JSON.parse(localStorage.getItem('fixture-inventory')||'[]');
+  const events=JSON.parse(localStorage.getItem('fixture-events')||'[]');
   const table={dealer_memberships:[{dealer_id:'a',user_id:user.id,dealers:{name:'Test Dealer'}}],auction_vehicles:rows,auction_events:events,dealer_inventory:inventory};
   let authChanged;
   return {
@@ -40,6 +41,8 @@ export function createClient(){
           }
           if(action==='update')matches.forEach(record=>Object.assign(record,values));
           localStorage.setItem('fixture-vehicles',JSON.stringify(rows));
+          localStorage.setItem('fixture-inventory',JSON.stringify(inventory));
+          localStorage.setItem('fixture-events',JSON.stringify(events));
           resolve({data:single?matches[0]||null:matches,error:null});
         }
       };
@@ -142,6 +145,12 @@ test('390px browser flow with mocked Supabase and NHTSA services', {timeout:4500
     await page.getByRole('button',{name:'Sign out'}).click();
     await page.getByRole('heading',{name:'Dealer sign in'}).waitFor();
     assert.equal(await page.getByText('Updated preparation',{exact:true}).count(),0);
+    await page.locator('#email').fill('dealer@example.test');
+    await page.locator('#password').fill('fictional-password');
+    await page.getByRole('button',{name:'Sign in',exact:true}).click();
+    await vehicle.click();
+    await page.getByText('Dealer inventory match: STOCK-1').waitFor();
+    await page.getByText(/Recorded acquisition total \$12,450\.00/).waitFor();
     assert.deepEqual(errors,[]);
   }finally{
     await browser?.close();
