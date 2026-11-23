@@ -29,7 +29,7 @@ The local test captures and restores a PostgreSQL data-directory archive into a 
 
 1. In the dedicated fictional staging project, complete the API check and record the evidence tag. Follow the [Supabase CLI backup and restore guide](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore) to make a manual logical backup, including the Auth data needed by VINCORE memberships. Free projects do not include automatic backups. Store the backup outside Git and Drive handoffs with restricted access.
 2. Restore into an empty disposable Supabase stack or an approved second no-cost test project. Confirm the source and destination references before executing the restore. Keep the staging source intact.
-3. With the pre-existing test identities, check the original tagged record in the restore target before generating any new fixture rows. Verify the VIN, maximum bid, purchase and expense totals, original creator, teammate access, Dealer B denial, and inventory match. Capture the tag and redacted pass/fail results. Run the API checker against the restore target for a fresh write-and-isolation check.
+3. Point the staging runner at the restore target and set VINCORE_RESTORE_TAG to the complete evidence tag from the source run. Run node staging-check.mjs with the restored test identities. This mode signs in, then reads the original vehicles, events, and inventory and verifies dealer isolation without writing fixture rows. Capture redacted results. Clear VINCORE_RESTORE_TAG and rerun for a fresh write-and-isolation check.
 
 ## Phone acceptance
 

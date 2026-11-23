@@ -59,6 +59,32 @@ async function saveVehicle(user) {
   return row.id;
 }
 
+async function verifyRestored(tag, a, b, teammate) {
+  const endpoint=api+'auction_vehicles?select=id,vin,max_bid,status,notes,created_by&label=eq.'+encodeURIComponent(tag);
+  const own=success(await request(endpoint,{token:a.token}),'Read restored Dealer A vehicle');
+  const other=success(await request(endpoint,{token:b.token}),'Read restored Dealer B vehicle');
+  assert.equal(own.length,1);
+  assert.equal(other.length,1);
+  const [vehicle]=own;
+  assert.notEqual(vehicle.id,other[0].id);
+  assert.equal(vehicle.vin,vin);
+  assert.equal(Number(vehicle.max_bid),12700);
+  assert.equal(vehicle.status,'won');
+  assert.equal(vehicle.notes,'Fictional teammate confirmed preparation');
+  assert.ok(vehicle.created_by===a.id,'Restored original author must match Dealer A');
+  const eventsUrl=api+'auction_events?select=event_type,amount,created_by&vehicle_id=eq.'+vehicle.id+'&order=event_type';
+  for(const user of [a,teammate]){
+    const events=success(await request(eventsUrl,{token:user.token}),'Read restored events as authorized member');
+    assert.deepEqual(events.map(event=>[event.event_type,Number(event.amount)]),[['bid',12000],['expense',450],['won',12000]]);
+    assert.ok(events.every(event=>event.created_by===teammate.id),'Restored events must retain teammate attribution');
+  }
+  assert.deepEqual(success(await request(eventsUrl,{token:b.token}),'Check restored events remain private'),[]);
+  const stockUrl=api+'dealer_inventory?select=vin&vin=eq.'+vin+'&dealer_id=eq.'+a.dealer;
+  assert.deepEqual(success(await request(stockUrl,{token:a.token}),'Read restored inventory'),[{vin}]);
+  assert.deepEqual(success(await request(stockUrl,{token:b.token}),'Check restored inventory remains private'),[]);
+  console.log('PASS restored vehicles, events, inventory, attribution, and dealer isolation');
+}
+
 async function main() {
   if (settings.VINCORE_STAGE_CONFIRM !== 'fictional-staging' ||
       !/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(url || '') ||
@@ -66,10 +92,17 @@ async function main() {
       accounts.some(([, , password])=>!settings[password])) {
     throw Error('Set staging confirmation, hosted project URL, publishable key, and all three test passwords. No requests made.');
   }
+  const tag=settings.VINCORE_RESTORE_TAG;
+  if(tag!==undefined && !/^VINCORE pilot [0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(tag))
+    throw Error('Provide the complete fictional evidence tag. No requests made.');
   const [a,b,team] = await Promise.all(accounts.map(signIn));
   assert.ok(a.dealer===team.dealer && a.dealer!==b.dealer && new Set([a.id,b.id,team.id]).size===3,
     'Expected three distinct accounts in two fictional dealerships');
   console.log('PASS real password authentication and explicit dealer memberships');
+  if(tag){
+    await verifyRestored(tag,a,b,team);
+    return;
+  }
 
   // Check database authorization through the same API and public client key as the browser.
   const idA=await saveVehicle(a), idB=await saveVehicle(b);
