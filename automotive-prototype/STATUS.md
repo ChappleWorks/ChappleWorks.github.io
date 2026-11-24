@@ -11,12 +11,14 @@
 
 - Dealer B signed in and saved the same VIN in its separate workspace. Its record survived reload, and the Dealer A record was absent. The teammate signed in, recovered Dealer A's acquisition total, did not see Dealer B's record, and saved a note to Dealer A's record.
 
+- A read-only export of hosted fictional VINCORE records restored successfully in a disposable local PostgreSQL instance. All five table counts matched, the acquisition total remained 12,450, dealer isolation held, and destination CRM and Auth records were preserved.
+
 ## Pending
 
-Direct authenticated cross-application API denial and restore of a hosted backup remain pending. The database-side negative checks and the three browser login and persistence checks have passed. No real dealer data is authorized. Do not distribute as a verified pilot until those checks pass.
+Direct authenticated cross-application API denial remains pending. The database-side negative checks and the three browser login and persistence checks have passed. No real dealer data is authorized. Do not distribute as a verified pilot until those checks pass.
 
 ## Next
 
-Complete the authenticated CRM/Invoice Studio API checks and rehearse hosted backup recovery before the external dealer handoff.
+Complete the authenticated CRM/Invoice Studio API checks before the external dealer handoff.
 
 [HTTPS staging](https://leonet-vincore-staging.pages.dev/) · [Draft PR and tests](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)
