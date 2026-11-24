@@ -12,7 +12,9 @@ export function createClient(_url,_key,options){
   const rows=JSON.parse(localStorage.getItem('fixture-vehicles')||'[]');
   const inventory=JSON.parse(localStorage.getItem('fixture-inventory')||'[]');
   const events=JSON.parse(localStorage.getItem('fixture-events')||'[]');
-  const table={dealer_memberships:[{dealer_id:'a',user_id:user.id,dealers:{name:'Test Dealer'}}],auction_vehicles:rows,auction_events:events,dealer_inventory:inventory};
+  const transactions=JSON.parse(localStorage.getItem('fixture-transactions')||'[]');
+  const valuations=JSON.parse(localStorage.getItem('fixture-valuations')||'[]');
+  const table={vehicle_transactions:transactions,vehicle_valuations:valuations,dealer_memberships:[{dealer_id:'a',user_id:user.id,dealers:{name:'Test Dealer'}}],auction_vehicles:rows,auction_events:events,dealer_inventory:inventory};
   let authChanged;
   return {
     auth:{
@@ -20,6 +22,25 @@ export function createClient(_url,_key,options){
       getUser:async()=>({data:{user:signedIn()?user:null}}),
       signInWithPassword:async()=>{localStorage.setItem('fixture-session','yes');return {}},
       signOut:async({scope})=>{if(scope!=='local')throw Error('Shared Auth sign-out must stay local');localStorage.removeItem('fixture-session');authChanged('SIGNED_OUT');return {}}
+    },
+    async rpc(name,{p_kind,p_rows,p_confirm,p_dealer}){
+      if(name!=='import_csv')return {error:new Error('Unexpected RPC')};
+      const target={inventory,auction:rows,transactions,valuations}[p_kind];
+      const result={inserted:0,duplicates:0,updated:0,reconciled:0};
+      for(const record of p_rows){
+        const duplicate=target.some(existing=>existing.vin===record.vin&&(
+          p_kind==='inventory'||(p_kind==='auction'?existing.auction_date===record.auction_date&&existing.lane_run===record.lane_run:existing.record_id===record.record_id)));
+        if(duplicate){result.duplicates++;continue;}
+        result.inserted++;
+        if(p_confirm)target.push({id:String(target.length+1),dealer_id:p_dealer,status:'watching',...record});
+      }
+      if(p_confirm){
+        localStorage.setItem('fixture-vehicles',JSON.stringify(rows));
+        localStorage.setItem('fixture-inventory',JSON.stringify(inventory));
+        localStorage.setItem('fixture-transactions',JSON.stringify(transactions));
+        localStorage.setItem('fixture-valuations',JSON.stringify(valuations));
+      }
+      return {data:result};
     },
     from(name){
       let filters=[], action='select', values, single=false;
@@ -137,6 +158,21 @@ test('390px browser flow with mocked Supabase and NHTSA services', {timeout:4500
     await page.locator('#confirmImport').click();
     await page.getByText(/Import complete/).waitFor();
     assert.equal(await page.getByRole('button',{name:'Run list truck'}).count(),1);
+    for(const [kind,csv] of [
+      ['transactions','vin,source,record_id,acquisition_ref,kind,effective_date,amount,auction_name,costs_complete\n'+
+        [',accounting,p1,c1,purchase,2026-11-20,10000,Example,',',accounting,e1,c1,expense,2026-11-21,500,,',',accounting,s1,c1,sale,2026-11-22,13000,,true'].map(row=>vin+row).join('\n')],
+      ['valuations','vin,source,record_id,effective_date,basis,amount\n'+vin+',valuation,q1,2026-11-22,retail,15000']
+    ]){
+      await page.locator('#importType').selectOption(kind);
+      await page.locator('#importFile').setInputFiles({name:kind+'.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
+      await page.getByRole('button',{name:'Preview file'}).click();
+      await page.locator('#confirmImport').click();
+      await page.getByText(/Import complete/).waitFor();
+    }
+    await page.getByRole('button',{name:'Run list truck'}).click();
+    await page.locator('#vinTransactions').getByText(/Realized profit \$2,500\.00/).waitFor();
+    await page.getByRole('button',{name:'Use as retail selling value'}).click();
+    assert.equal(await page.locator('#fileBidInputs fieldset').last().getByLabel('Selling value ($)').inputValue(),'15000');
     await page.getByRole('button',{name:'Preview browser records'}).click();
     await page.locator('#confirmImport').click();
     await page.getByText('Legacy note',{exact:true}).waitFor();

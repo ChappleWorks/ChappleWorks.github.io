@@ -20,7 +20,7 @@ fieldset{min-width:0;margin:0;border:1px solid #28596f;border-radius:9px}
 <div class="panel"><h2>Maximum planned bids</h2><div id="budget" style="font-size:30px;font-weight:700">$0</div></div>
 </div>
 <section class="panel" aria-labelledby="auctionReportTitle">
-<h2 id="auctionReportTitle">Auction performance</h2>
+<h2 id="auctionReportTitle">Auction performance</h2><h3>Imported purchase-to-sale results</h3><div class="tablewrap"><table><thead><tr><th>Auction</th><th>Acquisitions</th><th>Avg recorded acquisition</th><th>Sold</th><th>Complete profit records</th><th>Avg realized profit</th><th>Avg days to sale</th></tr></thead><tbody id="profitReport"></tbody></table></div><h3>Run list and manual auction results</h3>
 <p class="hint" id="demoNotice" hidden>Contains fictional demonstration history. These figures are sample results.</p>
 <p class="muted">Averages use purchases with a recorded winning bid. All-in adds recorded expenses. Missing expenses may understate cost.</p>
 <p id="auctionReportStatus" role="status"></p>
@@ -42,14 +42,18 @@ fieldset{min-width:0;margin:0;border:1px solid #28596f;border-radius:9px}
 <div><button type="submit">Save vehicle</button> <button id="cancelEdit" type="button" class="secondary" hidden>Cancel edit</button></div>
 </form></div>
 <div class="panel"><details><summary>Import auction records</summary>
-<p>Run-list CSV columns are vin, auction_name, auction_date, lane_run, and optional label. Dates use YYYY-MM-DD. You can also choose a VIN JSON export or review records stored by the prototype on this browser.</p>
-<label>Import type<select id="importType"><option value="auction">Auction run list or legacy export</option><option value="inventory">Inventory CSV (vin, optional label and stock_number)</option></select></label><label>CSV or JSON file<input id="importFile" type="file" accept=".csv,.json"></label>
-<div class="actions"><button type="button" id="previewFile">Preview file</button><button type="button" class="secondary" id="previewLocal">Preview browser records</button></div>
-<p id="importPreview" role="status"></p><button type="button" id="confirmImport" hidden>Import into selected dealership</button>
+<p>Download the selected CSV template, then preview it before saving to the dealership. A conflict stops the entire file. Existing VIN JSON exports remain supported.</p>
+<label>Import type<select id="importType"><option value="auction">Auction run list or legacy export</option><option value="inventory">Inventory CSV</option><option value="transactions">Purchase, expense, and sale CSV</option><option value="valuations">External valuations CSV</option></select></label>
+<button id="downloadTemplate" type="button" class="secondary">Download CSV template</button>
+<label>CSV or JSON file<input id="importFile" type="file" accept=".csv,.json"></label><div class="actions"><button type="button" id="previewFile">Preview file</button><button type="button" class="secondary" id="previewLocal">Preview browser records</button></div>
+<p id="importPreview" role="status"></p><ul id="inventoryChanges"></ul><button type="button" id="confirmImport" hidden>Import into selected dealership</button>
 </details></div>
 <div class="panel"><div class="toolbar"><h2>Auction list</h2><button id="refresh" class="secondary">Refresh</button></div><div class="tablewrap"><table><thead><tr><th>Vehicle</th><th>VIN</th><th>Auction</th><th>Maximum bid</th><th>Status</th><th>Notes</th></tr></thead><tbody id="vehicles"></tbody></table></div></div>
-<div class="panel" id="execution" hidden><h2>Execute auction — <span id="selectedVehicle"></span></h2><p class="muted">Records your actions in VINCORE; does not submit bids to an auction provider.</p>
-<p id="inventoryMatch" class="muted"></p><p id="actualCost" class="muted"></p><details id="archive" hidden><summary>Imported prototype history</summary><pre id="archiveData" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details><button type="button" class="secondary" id="editVehicle">Edit preparation</button><form id="eventForm" class="grid">
+<div class="panel" id="execution" hidden><h2>VIN file — <span id="selectedVehicle"></span></h2><p class="muted">Records your actions in VINCORE; does not submit bids to an auction provider.</p>
+<p id="fileIdentity"></p><p id="inventoryMatch" class="muted"></p>
+<h3>Transactions by acquisition</h3><div id="vinTransactions"></div>
+<h3>External valuation evidence</h3><div id="vinValuations"></div>
+<h3>VIN file bid calculator</h3><p class="muted">Choose a valuation or enter your own selling value. Add your costs and required profit before using a cap.</p><div class="grid" id="fileBidInputs"></div><p id="actualCost" class="muted"></p><details id="archive" hidden><summary>Imported prototype history</summary><pre id="archiveData" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details><button type="button" class="secondary" id="editVehicle">Edit preparation</button><form id="eventForm" class="grid">
 <label>Action<select id="eventType"><option value="bid">Record bid</option><option value="won">Mark won</option><option value="lost">Mark lost</option><option value="passed">Mark passed</option><option value="expense">Record actual expense</option><option value="note">Add note</option></select></label>
 <label>Bid / purchase / expense amount ($)<input id="amount" type="number" min="0" step=".01"></label>
 <label class="wide">Details<textarea id="eventNote" rows="2" maxlength="20000"></textarea></label>
@@ -60,7 +64,7 @@ fieldset{min-width:0;margin:0;border:1px solid #28596f;border-radius:9px}
 </main>
 <script src="./config.js"></script>
 <script type="module">
-import { validVin, maximumBid, lookupVin, modelRecalls, legacyRecords, prepareLegacy, prepareRunList, prepareInventory, auctionSummary } from './auction-tools.mjs';
+import { validVin, maximumBid, lookupVin, modelRecalls, legacyRecords, prepareLegacy, auctionSummary, importTemplates, standardImport, acquisitionCycles } from './auction-tools.mjs';
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
 const show=(id,on)=>$(id).hidden=!on;
@@ -119,7 +123,7 @@ function clearWorkspace() {
   $('importFile').value='';
   $('importPreview').textContent='';
   $('confirmImport').hidden=true;
-  for (const id of ['vehicles','events','archiveData','selectedVehicle','actualCost','inventoryMatch','auctionReport','auctionReportStatus']) $(id).replaceChildren();
+  for (const id of ['vehicles','events','archiveData','selectedVehicle','actualCost','inventoryMatch','auctionReport','auctionReportStatus','profitReport','inventoryChanges','vinTransactions','vinValuations','fileIdentity']) $(id).replaceChildren();
   for (const id of ['count','won','budget']) $(id).textContent='—';
   show('execution',false);
   show('demoNotice',false);
@@ -156,24 +160,59 @@ async function loadVehicles(){
   $('count').textContent=vehicles.length;$('won').textContent=vehicles.filter(v=>v.status==='won').length;
   $('budget').textContent=money(vehicles.reduce((a,v)=>a+(Number(v.max_bid)||0),0));
   const body=$('vehicles');body.replaceChildren();
-  for(const v of vehicles){const tr=document.createElement('tr');tr.dataset.id=v.id;const cell=document.createElement('td'), button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=v.label||'Vehicle';cell.append(button);tr.append(cell);td(tr,v.vin);td(tr,[v.auction_name,v.auction_date,v.lane_run].filter(Boolean).join(' • '));td(tr,v.max_bid==null?'—':money(v.max_bid));td(tr,v.status);td(tr,v.notes);button.addEventListener('click',()=>selectVehicle(v.id).catch(err=>msg(err.message,true)));body.append(tr)}
+  for(const v of vehicles){const tr=document.createElement('tr');tr.dataset.id=v.id;const cell=document.createElement('td'), button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=v.label||'Vehicle';cell.append(button);tr.append(cell);td(tr,v.vin);td(tr,[v.auction_name,v.auction_date,v.lane_run].filter(Boolean).join(' • '));td(tr,v.max_bid==null?'—':money(v.max_bid));td(tr,v.status);td(tr,v.notes);button.addEventListener('click',()=>selectVehicle(v.id,true).catch(err=>msg(err.message,true)));body.append(tr)}
   if(!vehicles.length){const tr=document.createElement('tr');const cell=document.createElement('td');cell.colSpan=6;cell.textContent='No vehicles yet. Add the first VIN above.';tr.append(cell);body.append(tr)}
   await loadAuctionSummary(version,id,request);
+}
+async function pagedRows(table, columns, dealer, filter) {
+  const all=[];
+  for(let offset=0;;offset+=500){
+    let query=supabase.from(table).select(columns).eq('dealer_id',dealer);
+    if(filter)query=query.eq('vin',filter);
+    const page=await checked(query.order('source').order('record_id').range(offset,offset+499));
+    all.push(...page);
+    if(page.length<500)return all;
+  }
+}
+function renderProfitReport(rows,events) {
+  const body=$('profitReport');
+  body.replaceChildren();
+  const groups=new Map();
+  for(const cycle of acquisitionCycles(rows,events)){
+    if(!cycle.purchase)continue;
+    const auction=cycle.purchase.auction_name||'Auction not entered';
+    const group=groups.get(auction)||{total:0,sold:0,priced:0,profit:0,days:0,acquisition:0};
+    group.total++; group.acquisition+=cycle.acquisition;
+    if(cycle.sale){group.sold++;group.days+=cycle.days;}
+    if(cycle.profit!==null){group.priced++;group.profit+=cycle.profit;}
+    groups.set(auction,group);
+  }
+  for(const [auction,g] of groups){
+    const tr=document.createElement('tr');
+    for(const cell of [auction,g.total,money(g.acquisition/g.total/100),g.sold,g.priced,g.priced?money(g.profit/g.priced/100):'—',g.sold?(g.days/g.sold).toFixed(1):'—'])td(tr,cell);
+    body.append(tr);
+  }
+  if(!groups.size){
+    const tr=document.createElement('tr'),cell=document.createElement('td');
+    cell.colSpan=7;cell.textContent='No imported purchase history.';tr.append(cell);body.append(tr);
+  }
 }
 async function loadAuctionSummary(version,id,request) {
   show('demoNotice',vehicles.some(v=>v.import_key?.startsWith('demo-history:')));
   const body=$('auctionReport');
   body.replaceChildren();
   $('auctionReportStatus').textContent=vehicles.length?'Loading recorded costs…':'No auction history yet.';
-  if(!vehicles.length)return;
   const relevant=[];
   try {
     for(let offset=0;;offset+=500){
-      const page=await checked(supabase.from('auction_events').select('vehicle_id,event_type,amount').eq('dealer_id',id).order('created_at').order('id').range(offset,offset+499));
+      const page=await checked(supabase.from('auction_events').select('id,vehicle_id,event_type,amount').eq('dealer_id',id).order('created_at').order('id').range(offset,offset+499));
       if(!inWorkspace(version,id)||request!==listRequest)return;
       relevant.push(...page);
       if(page.length<500)break;
     }
+    const imported=await pagedRows('vehicle_transactions','*',id);
+    if(!inWorkspace(version,id)||request!==listRequest)return;
+    renderProfitReport(imported,relevant);
     for(const item of auctionSummary(vehicles,relevant)){
       const tr=document.createElement('tr');
       const avg=item.priced?money(item.purchase/item.priced/100):'—';
@@ -186,28 +225,49 @@ async function loadAuctionSummary(version,id,request) {
     if(inWorkspace(version,id)&&request===listRequest)$('auctionReportStatus').textContent='Recorded costs could not be loaded. Refresh the auction list to retry.';
   }
 }
-async function selectVehicle(id){
+async function selectVehicle(id,openFile=false){
   const version=workspaceVersion,dealer=dealerId,request=++eventRequest;
+  for(const id of ['vinTransactions','vinValuations','fileIdentity'])$(id).replaceChildren();
+  for(const input of $('fileBidInputs').querySelectorAll('input')){
+    input.value='';
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+  }
   $('events').replaceChildren();$('archiveData').replaceChildren();show('archive',false);
   $('actualCost').textContent='';$('inventoryMatch').textContent='';$('eventForm').reset();
   selected=vehicles.find(v=>v.id===id);if(!selected)return;
   for(const row of $('vehicles').querySelectorAll('tr[data-id]'))row.classList.toggle('selected',row.dataset.id===id);
   $('selectedVehicle').textContent=selected.label||selected.vin;show('execution',true);
-  const [record,events,inventory]=await Promise.all([
+  if(openFile)document.getElementById('execution').scrollIntoView({block:'start'});
+  const vin=selected.vin;
+  $('fileIdentity').textContent=[vin,selected.auction_name,selected.auction_date,selected.lane_run].filter(Boolean).join(' · ');
+  const [record,events,inventory,transactions,valuations]=await Promise.all([
     checked(supabase.from('auction_vehicles').select('imported_record').eq('dealer_id',dealer).eq('id',id).single()),
     (async()=>{
       const rows=[];
       for(let offset=0;;offset+=500){
-        const page=await checked(supabase.from('auction_events').select('created_at,event_type,amount,note').eq('dealer_id',dealer).eq('vehicle_id',id).order('created_at',{ascending:false}).order('id').range(offset,offset+499));
+        const page=await checked(supabase.from('auction_events').select('id,vehicle_id,created_at,event_type,amount,note').eq('dealer_id',dealer).eq('vehicle_id',id).order('created_at',{ascending:false}).order('id').range(offset,offset+499));
         if(!inWorkspace(version,dealer)||eventRequest!==request)return rows;
         rows.push(...page);
         if(page.length<500)return rows;
       }
     })(),
-    checked(supabase.from('dealer_inventory').select('label,stock_number').eq('dealer_id',dealer).eq('vin',selected.vin).maybeSingle())
+    checked(supabase.from('dealer_inventory').select('label,stock_number,mileage,acquisition_date,acquisition_cost').eq('dealer_id',dealer).eq('vin',vin).maybeSingle()),
+    pagedRows('vehicle_transactions','*',dealer,vin),
+    pagedRows('vehicle_valuations','*',dealer,vin)
   ]);
   if(!inWorkspace(version,dealer)||selected?.id!==id||eventRequest!==request)return;
-  if(inventory){$('inventoryMatch').textContent='Dealer inventory match: '+[inventory.label,inventory.stock_number].filter(Boolean).join(' · ');}
+  if(inventory){
+    $('inventoryMatch').textContent='Dealer inventory match: '+[inventory.label,inventory.stock_number,
+      inventory.mileage==null?'':inventory.mileage.toLocaleString()+' mi',inventory.acquisition_date,
+      inventory.acquisition_cost==null?'':'Recorded inventory cost '+money(inventory.acquisition_cost)].filter(Boolean).join(' · ');
+  }
+  const otherEvents=[];
+  for(const appearance of vehicles.filter(v=>v.vin===vin&&v.id!==id)){
+    const items=await checked(supabase.from('auction_events').select('id,vehicle_id,event_type,amount').eq('dealer_id',dealer).eq('vehicle_id',appearance.id));
+    if(!inWorkspace(version,dealer)||eventRequest!==request||selected?.id!==id)return;
+    otherEvents.push(...items);
+  }
+  renderVinHistory(transactions,valuations,[...events,...otherEvents]);
   if(record.imported_record){
     $('archiveData').textContent=JSON.stringify(record.imported_record,null,2);
     show('archive',true);
@@ -216,7 +276,7 @@ async function selectVehicle(id){
   const expenses=events.filter(event=>event.event_type==='expense').reduce((sum,event)=>sum+Math.round(Number(event.amount)*100),0)/100;
   $('actualCost').textContent='Recorded expenses '+money(expenses)+(purchase==null?' · Purchase amount unavailable':' · Recorded acquisition total '+money(Number(purchase)+expenses));
   const body=$('events');body.replaceChildren();
-  for(const e of events){const tr=document.createElement('tr');td(tr,new Date(e.created_at).toLocaleString());td(tr,e.event_type);td(tr,e.amount==null?'—':money(e.amount));td(tr,e.note);body.append(tr)}
+  for(const e of events){const tr=document.createElement('tr');td(tr,new Date(e.created_at).toLocaleString());td(tr,e.event_type);td(tr,e.amount==null?'—':money(e.amount));td(tr,[e.note,e.id?'Activity ID '+e.id:''].filter(Boolean).join(' · '));body.append(tr)}
 }
 $('login').addEventListener('submit',async e=>{e.preventDefault();const button=e.target.querySelector('button');button.disabled=true;try{msg('Signing in…');await checked(supabase.auth.signInWithPassword({email:value('email'),password:$('password').value}));$('password').value='';msg('');await initialize()}catch(err){msg('Sign-in failed: '+err.message,true)}finally{button.disabled=false}});
 $('logout').addEventListener('click',async()=>{try{await checked(supabase.auth.signOut({scope:'local'}));clearWorkspace();sessionUser=null;show('app',false);show('logout',false);show('auth',true);$('who').textContent='';msg('Signed out.')}catch(err){msg(err.message,true)}});
@@ -371,11 +431,53 @@ $('research').onclick=async()=>{
   }catch(err){if(current())$('vinResearch').textContent=err.message+'. You can still enter the details manually.'}
 };
 $('vin').addEventListener('input',clearResearch);
-for(const channel of ['Wholesale','Retail']){
+const vinBidValues=new Map();
+function renderVinHistory(transactions,valuations,events){
+  const t=$('vinTransactions'),v=$('vinValuations');
+  for(const cycle of acquisitionCycles(transactions,events)){
+    const section=document.createElement('section');
+    const title=document.createElement('h4');
+    title.textContent=[cycle.ref,cycle.source,cycle.purchase?.auction_name].filter(Boolean).join(' · ');
+    section.append(title);
+    const text=document.createElement('p');
+    text.textContent=[
+      cycle.acquisition===null?'Purchase unavailable':'Recorded acquisition '+money(cycle.acquisition/100),
+      cycle.sale?'Sold '+money(cycle.sale.amount)+' · '+cycle.days+' days to sale':(cycle.days==null?'Sale unavailable':'Unsold · '+Math.max(0,cycle.days)+' days since purchase'),
+      cycle.profit===null?(cycle.sale?'Profit unavailable: confirm complete costs':''):'Realized profit '+money(cycle.profit/100)
+    ].filter(Boolean).join(' · ');
+    section.append(text);
+    const details=document.createElement('ul');
+    for(const row of [cycle.purchase,...cycle.expenses,cycle.sale].filter(Boolean)){
+      const item=document.createElement('li');
+      item.textContent=[row.effective_date,row.kind,row.category,row.amount==null?'Amount unknown':money(row.amount),
+        row.manual_event_id?'Matched to manual auction activity':''].filter(Boolean).join(' · ');
+      details.append(item);
+    }
+    section.append(details);
+    t.append(section);
+  }
+  if(!transactions.length)t.textContent='No imported transactions for this VIN.';
+  for(const row of valuations.sort((a,b)=>b.effective_date.localeCompare(a.effective_date))){
+    const p=document.createElement('p'),button=document.createElement('button');
+    p.textContent=[row.effective_date,row.source,row.basis+' estimate',money(row.amount),row.notes].filter(Boolean).join(' · ')+' ';
+    button.type='button';button.className='secondary';button.textContent='Use as '+row.basis+' selling value';
+    button.onclick=()=>{
+      const input=vinBidValues.get(row.basis);
+      input.value=row.amount;
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      input.focus();
+    };
+    p.append(button);
+    v.append(p);
+  }
+  if(!valuations.length)v.textContent='No external valuations for this VIN.';
+}
+for(const container of ['bidInputs','fileBidInputs'])for(const channel of ['Wholesale','Retail']){
   const fieldset=document.createElement('fieldset');
   fieldset.innerHTML='<legend>'+channel+'</legend><label>Selling value ($)<input type="number" min="0" step=".01"></label><label>Costs ($)<input type="number" min="0" step=".01"></label><label>Required profit ($)<input type="number" min="0" step=".01"></label><button type="button" class="secondary" disabled>Use '+channel.toLowerCase()+' cap</button> <output>—</output>';
-  $('bidInputs').append(fieldset);
+  $(container).append(fieldset);
   const inputs=[...fieldset.querySelectorAll('input')], button=fieldset.querySelector('button'), output=fieldset.querySelector('output');
+  if(container==='fileBidInputs')vinBidValues.set(channel.toLowerCase(),inputs[0]);
   const cap=()=>inputs.every(input=>input.validity.valid)?maximumBid(...inputs.map(input=>input.value)):null;
   function render(){
     const amount=cap();
@@ -384,56 +486,89 @@ for(const channel of ['Wholesale','Retail']){
   }
   fieldset.addEventListener('input',render);
   $('vehicleForm').addEventListener('reset',()=>queueMicrotask(render));
-  button.onclick=()=>{$('maxbid').value=cap()};
+  button.onclick=()=>{
+    const amount=cap();
+    if(container==='fileBidInputs')$('editVehicle').click();
+    $('maxbid').value=amount;
+  };
 }
-async function previewImport(loader,inventory=false){
-  const version=workspaceVersion,id=dealerId, request=++importRequest;
+function importTotals(result){
+  return result.inserted+' new, '+result.updated+' updated, '+result.duplicates+' exact duplicates, '+result.reconciled+' matched to manual activity';
+}
+function submitCsv(job,confirm){
+  return checked(supabase.rpc('import_csv',{p_dealer:job.id,p_kind:job.kind,p_file:job.file,p_rows:job.rows,p_confirm:confirm,p_expected:confirm?job.expected:null}));
+}
+for(const field of ['importFile','importType'])document.getElementById(field).addEventListener('change',()=>{
+  importRequest++;
+  pendingImport=null;
+  show('confirmImport',false);
+  document.getElementById('inventoryChanges').replaceChildren();
+  document.getElementById('importPreview').textContent='';
+});
+async function previewImport(loader){
+  const version=workspaceVersion,id=dealerId,request=++importRequest;
   pendingImport=null;
   show('confirmImport',false);
   $('importPreview').textContent='Reading records…';
   try{
-    const rows=await loader();
-    if(!inWorkspace(version,id))return;
-    if(request!==importRequest)return;
-    if(!rows.length||rows.length>500||JSON.stringify(rows).length>2000000)throw Error('Use 1–500 records under 2 MB per import.');
-    pendingImport={id,version,rows,inventory};
-    $('importPreview').textContent=rows.length+' record(s) for '+$('dealer').selectedOptions[0].textContent+
-      ': '+rows.slice(0,5).map(row=>row.vin).join(', ')+(rows.length>5?' …':'')+
-      '. Confirm you are authorized to transfer these records. Original files and browser records are retained.';
+    const payload=await loader();
+    const job={id,version,...payload};
+    if(!inWorkspace(version,id)||request!==importRequest)return;
+    if(!job.rows.length||job.rows.length>500||JSON.stringify(job.rows).length>2000000)
+      throw Error('Use 1–500 records under 2 MB per import.');
+    const result=job.kind==='legacy'?null:await submitCsv(job,false);
+    if(!inWorkspace(version,id)||request!==importRequest)return;
+    job.expected=result;
+    pendingImport=job;
+    const changes=$('inventoryChanges');
+    changes.replaceChildren();
+    for(const change of result?.inventory_changes||[]){
+      const li=document.createElement('li');
+      const fields=Object.keys(change.after).filter(key=>change.before[key]!==change.after[key]);
+      li.textContent=change.vin+' · '+fields.map(key=>key.replaceAll('_',' ')+': '+(change.before[key]??'unknown')+' → '+(change.after[key]??'unknown')).join(', ');
+      changes.append(li);
+    }
+    $('importPreview').textContent=(result?importTotals(result):job.rows.length+' archived VIN records')+
+      ' for '+$('dealer').selectedOptions[0].textContent+'. Confirm only records you are authorized to import.';
     show('confirmImport',true);
-  }catch(err){if(inWorkspace(version,id))$('importPreview').textContent=err.message}
+  }catch(err){if(inWorkspace(version,id)&&request===importRequest)$('importPreview').textContent=err.message}
 }
-$('previewFile').onclick=()=>{
-  const inventory=value('importType')==='inventory';
-  return previewImport(async()=>{
-    const file=$('importFile').files[0];
-    if(!file||file.size>2000000)throw Error('Choose a CSV or VIN JSON file under 2 MB.');
-    const contents=await file.text();
-    if(file.name.toLowerCase().endsWith('.csv'))return inventory?prepareInventory(contents):prepareRunList(contents);
-    if(inventory)throw Error('Inventory imports require CSV.');
-    const record=JSON.parse(contents);
-    if(record?.format!=='LeoNet VIN file prototype v1')throw Error('Expected a VIN JSON export from the public prototype.');
-    return prepareLegacy([record]);
-  },inventory);
+$('downloadTemplate').onclick=()=>{
+  const kind=value('importType');
+  const url=URL.createObjectURL(new Blob([importTemplates[kind].join(',')+'\r\n'],{type:'text/csv'}));
+  const link=document.createElement('a');
+  link.href=url;link.download='vincore-'+kind+'.csv';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
-$('previewLocal').onclick=()=>previewImport(()=>prepareLegacy(legacyRecords(localStorage)));
+$('previewFile').onclick=()=>previewImport(async()=>{
+  const kind=value('importType'),file=$('importFile').files[0];
+  if(!file||file.size>2000000)throw Error('Choose a CSV or VIN JSON file under 2 MB.');
+  const text=await file.text();
+  if(file.name.toLowerCase().endsWith('.csv'))return {kind,file:file.name.slice(0,180),rows:standardImport(text,kind)};
+  if(kind!=='auction')throw Error('Select Auction run list or legacy export for VIN JSON archives.');
+  const record=JSON.parse(text);
+  if(record?.format!=='LeoNet VIN file prototype v1')throw Error('Expected a VIN JSON export from the public prototype.');
+  return {kind:'legacy',rows:await prepareLegacy([record])};
+});
+$('previewLocal').onclick=()=>previewImport(async()=>({kind:'legacy',rows:await prepareLegacy(legacyRecords(localStorage))}));
 $('confirmImport').onclick=async()=>{
   const job=pendingImport;
   if(!job||!inWorkspace(job.version,job.id))return;
   const button=$('confirmImport');
   button.disabled=true;
   try{
-    // Fill every column in a bulk insert consistently, including optional fields.
-    const rows=job.rows.map(row=>({label:'',auction_name:'',auction_date:null,lane_run:'',notes:'',imported_record:null,...row,dealer_id:job.id}));
-    if(job.inventory){
-      await checked(supabase.from('dealer_inventory').upsert(job.rows.map(row=>({...row,dealer_id:job.id})),{onConflict:'dealer_id,vin',ignoreDuplicates:true}));
-    }else{
+    let description='Previously imported records were preserved.';
+    if(job.kind==='legacy'){
+      const rows=job.rows.map(row=>({label:'',auction_name:'',auction_date:null,lane_run:'',notes:'',imported_record:null,...row,dealer_id:job.id}));
       await checked(supabase.from('auction_vehicles').upsert(rows,{onConflict:'dealer_id,import_key',ignoreDuplicates:true}));
+    }else{
+      description=importTotals(await submitCsv(job,true))+'.';
     }
     if(!inWorkspace(job.version,job.id))return;
     pendingImport=null;
+    $('inventoryChanges').replaceChildren();
     show('confirmImport',false);
-    $('importPreview').textContent='Import complete. Previously imported records were preserved.';
+    $('importPreview').textContent='Import complete. '+description;
     await loadVehicles();
   }catch(err){if(inWorkspace(job.version,job.id))$('importPreview').textContent='Import failed: '+err.message}
   finally{button.disabled=false}

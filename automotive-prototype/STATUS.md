@@ -1,18 +1,19 @@
 # LeoNet VINCORE Auction status
 
+## Completed
+
+Implemented standardized CSV imports for auction run lists, inventory, purchase/expense/sale transactions, and external valuations. The run list opens a VIN file with current inventory, separate acquisition cycles, transaction history, auction activity, dated valuations, and retail/wholesale calculators. A valuation changes a selling-value input only when the buyer selects it. Recorded selling evidence stays separate from actual transactions.
+
 ## Verified
 
-- The separate dealer showcase is live at https://dealer-showcase.leonet-vincore-staging.pages.dev/. Dealer A signed in and the Auction performance view showed source-backed demo figures. The canonical staging deployment and the original public Auction were left intact.
-- Seeded 100 clearly labeled fictional auction vehicles into Dealer A. Verified 45 purchased, 20 lost, 15 passed, 10 bidding and 10 watching. Prior fictional records remain. The seed is scoped to the fictional dealer and is safe to rerun.
-- The report groups by auction and shows status counts, average recorded purchase price and average recorded all-in cost. Four independent hosted SQL results matched the signed-in browser. Bayline showed 12 purchases with averages of $12,494.00 and $13,853.50. All-in includes recorded expenses and can understate cost when expenses are missing.
-- Seven automated tests passed, including a repeatable seed, cost aggregation, and the existing browser and security flows.
+Seven local tests passed. The browser test used mocked services and exercised the four import paths, opening a run-list VIN file, realized profit and valuation handoff. Embedded PostgreSQL applied the additive migration and exercised rollback-only previews, repeat imports, inventory changes since preview, financial conflicts, rejected unmatched transactions, repeated-VIN cycles, incomplete costs, linked manual expenses, anonymous and cross-dealer denial, and VINCORE-only restore. The test fixture reconciled $10,000 purchase plus $500 expense against $13,000 sale to $2,500 realized profit and 11 days to sale.
 
 ## Pending
 
-The actual dealer needs a dedicated workspace and their history import needs mapping. The current inventory and auction-run CSV uploads are distinct from historical financial import. Prior legacy data can be archived, but archived amounts do not feed the current performance report. No direct dealer system or API has been identified or connected. No real dealer records were imported.
+The new import migration and frontend are not deployed. The existing HTTPS staging and showcase deployments are preserved. Live Supabase RPC behavior and the new browser experience against the hosted database are unverified. Additional file formats, provider authorization and direct integrations are outside this increment. No costs were incurred.
 
 ## Chris decision and next action
 
-Get a redacted export sample or column headers from one historical auction file, plus the source system name if available. Use that to map auction, VIN, outcome, winning bid and expenses. Reconcile a small real import in the dealership's own private workspace before loading its full history. Add selling-price or margin reporting only when reliable realized sale and cost data are available.
+No decision or dealer-specific files were needed to implement the standardized templates. The next release step is to run the migration and four import scenarios with fictional data in an isolated verification deployment, reconcile results, and verify that the current working staging application still operates before promotion. Do not load real dealer financial data before that check.
 
-[Dealer showcase](https://dealer-showcase.leonet-vincore-staging.pages.dev/) · [Draft PR](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1)
+[Import and reconciliation instructions](dealer/README.md) · [Draft PR](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1)
