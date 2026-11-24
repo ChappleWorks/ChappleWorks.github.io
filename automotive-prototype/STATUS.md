@@ -2,25 +2,17 @@
 
 ## Verified
 
-- The existing VINCORE dealer application is deployed to the separate static HTTPS staging site at https://leonet-vincore-staging.pages.dev/. HTTPS returned 200 and the VINCORE dealer email/password form rendered. The response includes noindex. The GitHub Pages production preview and existing LeoNet apps were left unchanged.
-- All three fictional Supabase Auth users are confirmed. Dealer A and the teammate share the same dealership, and Dealer B belongs to a different dealership. All five dealer tables have RLS. A direct signed-out API request returned HTTP 401 and PostgreSQL code 42501.
-- Hosted PostgreSQL tests using the three actual account subjects exercised a fictional vehicle and inventory row, bid, teammate purchase, expense, record visibility and dealer-private write rejection. Dealer A and Dealer B saw no CRM memberships, contacts, or Invoice Studio workspaces on the checked database paths. The fictional operation was rolled back. This was a database identity simulation.
-- Hosting used static Cloudflare Pages Direct Upload with no Functions, upgrades, or paid add-ons.
-
-- Dealer A successfully signed in on the deployed site. A live NHTSA decode, vehicle save and reload, inventory and run-list imports, manual bid, purchase and expense, and sign-out all passed. The fictional acquisition total was $12,450.
-
-- Dealer B signed in and saved the same VIN in its separate workspace. Its record survived reload, and the Dealer A record was absent. The teammate signed in, recovered Dealer A's acquisition total, did not see Dealer B's record, and saved a note to Dealer A's record.
-
-- A read-only export of hosted fictional VINCORE records restored successfully in a disposable local PostgreSQL instance. All five table counts matched, the acquisition total remained 12,450, dealer isolation held, and destination CRM and Auth records were preserved.
-
-- Direct authenticated API checks passed using the real Dealer A login on a separate Cloudflare Pages preview deployment. VINCORE returned Dealer A's dealership; CRM memberships and contacts and Invoice Studio ledgers and billing workspaces each returned HTTP 200 with no records. The canonical staging deployment was not replaced.
+- The separate dealer showcase is live at https://dealer-showcase.leonet-vincore-staging.pages.dev/. Dealer A signed in and the Auction performance view showed source-backed demo figures. The canonical staging deployment and the original public Auction were left intact.
+- Seeded 100 clearly labeled fictional auction vehicles into Dealer A. Verified 45 purchased, 20 lost, 15 passed, 10 bidding and 10 watching. Prior fictional records remain. The seed is scoped to the fictional dealer and is safe to rerun.
+- The report groups by auction and shows status counts, average recorded purchase price and average recorded all-in cost. Four independent hosted SQL results matched the signed-in browser. Bayline showed 12 purchases with averages of $12,494.00 and $13,853.50. All-in includes recorded expenses and can understate cost when expenses are missing.
+- Seven automated tests passed, including a repeatable seed, cost aggregation, and the existing browser and security flows.
 
 ## Pending
 
-The phone rehearsal with Mike and fictional data remains pending.
+The actual dealer needs a dedicated workspace and their history import needs mapping. The current inventory and auction-run CSV uploads are distinct from historical financial import. Prior legacy data can be archived, but archived amounts do not feed the current performance report. No direct dealer system or API has been identified or connected. No real dealer records were imported.
 
-## Next
+## Chris decision and next action
 
-Run the phone rehearsal with Mike using fictional data on the verified VINCORE staging site.
+Get a redacted export sample or column headers from one historical auction file, plus the source system name if available. Use that to map auction, VIN, outcome, winning bid and expenses. Reconcile a small real import in the dealership's own private workspace before loading its full history. Add selling-price or margin reporting only when reliable realized sale and cost data are available.
 
-[HTTPS staging](https://leonet-vincore-staging.pages.dev/) · [Draft PR and tests](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)
+[Dealer showcase](https://dealer-showcase.leonet-vincore-staging.pages.dev/) · [Draft PR](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1)
