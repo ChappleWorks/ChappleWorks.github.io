@@ -13,11 +13,11 @@ const vin = '2HJYK16587H520681';
 const run = 'VINCORE pilot ' + randomUUID();
 const api = '/rest/v1/';
 
-async function request(path, {method='GET', token, body, prefer}={}) {
+async function request(path, {method='GET', token, body, prefer, schema='vincore'}={}) {
   const headers = {apikey:key};
   if (path.startsWith(api)) {
-    headers['Accept-Profile']='vincore';
-    if (method!=='GET') headers['Content-Profile']='vincore';
+    headers['Accept-Profile']=schema;
+    if (method!=='GET') headers['Content-Profile']=schema;
   }
   if (token) headers.Authorization = 'Bearer ' + token;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -89,6 +89,23 @@ async function verifyRestored(tag, a, b, teammate) {
   console.log('PASS restored vehicles, events, inventory, attribution, and dealer isolation');
 }
 
+async function verifyPrivateCrmBoundary(dealers) {
+  for(const dealer of dealers){
+    for(const [path,label] of [
+      ['memberships?select=tenant_id','CRM memberships'],
+      ['contacts?select=id','CRM contacts'],
+      ['billing_v1?select=tenant_id','Invoice Studio ledgers'],
+      ['rpc/billing_v1_workspaces','Invoice Studio workspaces']
+    ]){
+      const result=await request(api+path,{token:dealer.token,schema:'crm'});
+      if(result.status===403 && result.data?.code==='42501')continue;
+      const none=success(result,'Check '+label);
+      assert.deepEqual(none,[],'Dealer login must see no '+label);
+    }
+  }
+  console.log('PASS dealer credentials see no private CRM or Invoice Studio records on the checked API routes');
+}
+
 async function main() {
   if (settings.VINCORE_STAGE_CONFIRM !== 'fictional-staging' ||
       !/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(url || '') ||
@@ -107,6 +124,8 @@ async function main() {
     await verifyRestored(tag,a,b,team);
     return;
   }
+
+  if(url==='https://cyhlursixdgppqnadzml.supabase.co')await verifyPrivateCrmBoundary([a,b,team]);
 
   // Check database authorization through the same API and public client key as the browser.
   const idA=await saveVehicle(a), idB=await saveVehicle(b);
