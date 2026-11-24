@@ -1,18 +1,18 @@
 # LeoNet VINCORE Auction status
 
-## Completed and verified
+## Verified
 
-- Installed both VINCORE migrations in one transaction in leonet-crm-test using the pinned development SQL. Verified all five VINCORE tables have row-level security.
-- Added vincore to the exposed Data API schemas. Verified the prior entries public, crm, crm_admin and graphql_public remain exposed. vincore_private and delivery remain unexposed.
-- A read-only hosted SQL check under an unassigned fictional subject returned zero VINCORE dealers, auction vehicles, CRM memberships and billing workspaces. This was a database role simulation.
-- Extended the staging API runner to check that each actual fictional dealer login sees no CRM memberships, CRM contacts, Invoice Studio ledgers or billing workspaces on the shared API. The real check still needs credentials. Six local tests passed.
+- The existing VINCORE dealer application is deployed to the separate static HTTPS staging site at https://leonet-vincore-staging.pages.dev/. HTTPS returned 200 and the VINCORE dealer email/password form rendered. The response includes noindex. The GitHub Pages production preview and existing LeoNet apps were left unchanged.
+- All three fictional Supabase Auth users are confirmed. Dealer A and the teammate share the same dealership, and Dealer B belongs to a different dealership. All five dealer tables have RLS. A direct signed-out API request returned HTTP 401 and PostgreSQL code 42501.
+- Hosted PostgreSQL tests using the three actual account subjects exercised a fictional vehicle and inventory row, bid, teammate purchase, expense, record visibility and dealer-private write rejection. Dealer A and Dealer B saw no CRM memberships, contacts, or Invoice Studio workspaces on the checked database paths. The fictional operation was rolled back. This was a database identity simulation.
+- Hosting used static Cloudflare Pages Direct Upload with no Functions, upgrades, or paid add-ons.
 
-## Pending and decision
+## Pending
 
-The three fictional Auth accounts were absent immediately before credential handoff. The account forms use direct creation with auto-confirm and no email; Chris enters their passwords in Supabase. No new approval is required for the authorized scope. Keep passwords out of chat, Git and reports.
+Chris has the live Dealer A sign-in form. Actual password sign-ins, authenticated API isolation, browser record persistence and hosted recovery remain unverified. No real dealer data is authorized. Do not distribute as a verified pilot until those checks pass.
 
-## Next action
+## Next
 
-Once the Auth identities exist, assign the fictional dealer memberships and run real dealer password, isolation, persistence and shared API checks. Verify VINCORE-only recovery, then publish and smoke-test the static HTTPS staging build. Cloudflare Pages static Direct Upload is the proposed route; verify account access and free configuration before publishing. There is no tested staging URL yet. The public Auction preview, CRM login settings and Invoice Studio login settings were preserved.
+Chris signs in once on the staging site as Dealer A. Verify the workspace, save and reopen a fictional record, then check Dealer B and teammate access and the private CRM/Invoice Studio API boundary. Rehearse backup recovery before dealer handoff.
 
-[Draft PR and tests](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files) · [Cloudflare Pages Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)
+[HTTPS staging](https://leonet-vincore-staging.pages.dev/) · [Draft PR and tests](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)
