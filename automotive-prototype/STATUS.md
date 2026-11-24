@@ -13,12 +13,14 @@
 
 - A read-only export of hosted fictional VINCORE records restored successfully in a disposable local PostgreSQL instance. All five table counts matched, the acquisition total remained 12,450, dealer isolation held, and destination CRM and Auth records were preserved.
 
+- Direct authenticated API checks passed using the real Dealer A login on a separate Cloudflare Pages preview deployment. VINCORE returned Dealer A's dealership; CRM memberships and contacts and Invoice Studio ledgers and billing workspaces each returned HTTP 200 with no records. The canonical staging deployment was not replaced.
+
 ## Pending
 
-Direct authenticated cross-application API denial remains pending. The database-side negative checks and the three browser login and persistence checks have passed. No real dealer data is authorized. Do not distribute as a verified pilot until those checks pass.
+The phone rehearsal with Mike and fictional data remains pending.
 
 ## Next
 
-Complete the authenticated CRM/Invoice Studio API checks before the external dealer handoff.
+Run the phone rehearsal with Mike using fictional data on the verified VINCORE staging site.
 
 [HTTPS staging](https://leonet-vincore-staging.pages.dev/) · [Draft PR and tests](https://github.com/ChappleWorks/ChappleWorks.github.io/pull/1/files)
