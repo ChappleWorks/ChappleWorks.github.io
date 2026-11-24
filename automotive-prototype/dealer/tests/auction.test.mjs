@@ -2,12 +2,22 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {PGlite} from '@electric-sql/pglite';
-import {legacyRecords, maximumBid, prepareLegacy, prepareRunList, prepareInventory} from '../auction-tools.mjs';
+import {legacyRecords, maximumBid, prepareLegacy, prepareRunList, prepareInventory, auctionSummary} from '../auction-tools.mjs';
 
 const vin = '2HJYK16587H520681';
 const ids = ['a','b','c','d','e','f','1','2'].map(c => c.repeat(8)+'-'+c.repeat(4)+'-'+c.repeat(4)+'-'+c.repeat(4)+'-'+c.repeat(12));
 const [alice, teammate, bob, dealerA, dealerB, vehicleA, vehicleB, jointVehicle] = ids;
 const schema = file => readFile(new URL('../../supabase/'+file, import.meta.url), 'utf8');
+
+test('auction reporting separates auctions, records expenses and excludes purchases without prices',()=>{
+  const v=[{id:'1',auction_name:'Sale A',status:'won'},{id:'2',auction_name:'Sale A',status:'won'},
+    {id:'3',auction_name:'Sale B',status:'lost'}];
+  const e=[{vehicle_id:'1',event_type:'won',amount:'1200.50'},
+    {vehicle_id:'1',event_type:'expense',amount:'55.24'},{vehicle_id:'2',event_type:'expense',amount:20}];
+  const [a,b]=auctionSummary(v,e);
+  assert.deepEqual([a.total,a.won,a.priced,a.purchase,a.expense],[2,2,1,120050,5524]);
+  assert.deepEqual([b.total,b.lost,b.priced],[1,1,0]);
+});
 
 test('bid caps, valid run lists, and VIN-matched dealer inventory', async () => {
   assert.equal(maximumBid('14200','500','1000'),12700);
@@ -146,6 +156,12 @@ test('PostgreSQL applies both migrations and enforces isolation and atomic outco
     await db.exec(fixture);
     const memberCount=await query("select count(*)::int as count from vincore.dealer_memberships join vincore.dealers on dealer_id=id where name like 'VINCORE Pilot%'");
     assert.equal(memberCount.rows[0].count,3);
+
+    const demo=await readFile(new URL('../pilot/seed-fictional-auction-history.sql',import.meta.url),'utf8');
+    await db.exec(demo);
+    await db.exec(demo);
+    const seeded=(await query("select status,count(*)::int as n from vincore.auction_vehicles where import_key like 'demo-history:%' group by status order by status")).rows;
+    assert.deepEqual(seeded,[{status:'bidding',n:10},{status:'lost',n:20},{status:'passed',n:15},{status:'watching',n:10},{status:'won',n:45}]);
 
     // Export only VINCORE records. The destination owns its Auth and CRM state.
     await db.exec('reset role');

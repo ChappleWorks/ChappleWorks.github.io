@@ -145,3 +145,33 @@ export async function modelRecalls(vehicle, signal) {
   const data = await response.json();
   return data.results || data.Results || [];
 }
+
+export function auctionSummary(vehicles, events) {
+  const totalsByVehicle = new Map();
+  for (const event of events) {
+    const cents = Math.round(Number(event.amount) * 100);
+    if (event.amount == null || !Number.isFinite(cents)) continue;
+    const totals = totalsByVehicle.get(event.vehicle_id) || { purchase: null, expense: 0 };
+    if (event.event_type === 'won') totals.purchase = cents;
+    if (event.event_type === 'expense') totals.expense += cents;
+    totalsByVehicle.set(event.vehicle_id, totals);
+  }
+  const groups = new Map();
+  for (const vehicle of vehicles) {
+    const auction = vehicle.auction_name.trim() || 'Auction not entered';
+    const value = groups.get(auction) || {
+      auction, total: 0, watching: 0, bidding: 0, won: 0, lost: 0, passed: 0,
+      priced: 0, purchase: 0, expense: 0
+    };
+    value.total++;
+    value[vehicle.status]++;
+    const costs = totalsByVehicle.get(vehicle.id);
+    if (vehicle.status === 'won' && costs?.purchase != null) {
+      value.priced++;
+      value.purchase += costs.purchase;
+      value.expense += costs.expense;
+    }
+    groups.set(auction, value);
+  }
+  return [...groups.values()].sort((a, b) => a.auction.localeCompare(b.auction));
+}

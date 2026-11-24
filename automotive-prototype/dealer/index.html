@@ -19,6 +19,13 @@ fieldset{min-width:0;margin:0;border:1px solid #28596f;border-radius:9px}
 <div class="panel"><h2>Vehicles won</h2><div id="won" style="font-size:30px;font-weight:700">0</div></div>
 <div class="panel"><h2>Maximum planned bids</h2><div id="budget" style="font-size:30px;font-weight:700">$0</div></div>
 </div>
+<section class="panel" aria-labelledby="auctionReportTitle">
+<h2 id="auctionReportTitle">Auction performance</h2>
+<p class="hint" id="demoNotice" hidden>Contains fictional demonstration history. These figures are sample results.</p>
+<p class="muted">Averages use purchases with a recorded winning bid. All-in adds recorded expenses. Missing expenses may understate cost.</p>
+<p id="auctionReportStatus" role="status"></p>
+<div class="tablewrap"><table><thead><tr><th>Auction</th><th>Tracked</th><th>Watching</th><th>Bidding</th><th>Purchased</th><th>Lost</th><th>Passed</th><th>Recorded prices</th><th>Avg purchase</th><th>Avg all-in</th></tr></thead><tbody id="auctionReport"></tbody></table></div>
+</section>
 <div class="panel"><h2>Add vehicle to auction list</h2>
 <form id="vehicleForm" class="grid">
 <label>17-character VIN<input id="vin" maxlength="17" minlength="17" pattern="[A-HJ-NPR-Za-hj-npr-z0-9]{17}" required placeholder="Enter VIN"></label>
@@ -53,7 +60,7 @@ fieldset{min-width:0;margin:0;border:1px solid #28596f;border-radius:9px}
 </main>
 <script src="./config.js"></script>
 <script type="module">
-import { validVin, maximumBid, lookupVin, modelRecalls, legacyRecords, prepareLegacy, prepareRunList, prepareInventory } from './auction-tools.mjs';
+import { validVin, maximumBid, lookupVin, modelRecalls, legacyRecords, prepareLegacy, prepareRunList, prepareInventory, auctionSummary } from './auction-tools.mjs';
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
 const show=(id,on)=>$(id).hidden=!on;
@@ -112,9 +119,10 @@ function clearWorkspace() {
   $('importFile').value='';
   $('importPreview').textContent='';
   $('confirmImport').hidden=true;
-  for (const id of ['vehicles','events','archiveData','selectedVehicle','actualCost','inventoryMatch']) $(id).replaceChildren();
+  for (const id of ['vehicles','events','archiveData','selectedVehicle','actualCost','inventoryMatch','auctionReport','auctionReportStatus']) $(id).replaceChildren();
   for (const id of ['count','won','budget']) $(id).textContent='—';
   show('execution',false);
+  show('demoNotice',false);
 }
 const value=id=>$(id).value.trim();
 const td=(tr,text)=>{const cell=document.createElement('td');cell.textContent=String(text??'');tr.append(cell)};
@@ -139,7 +147,7 @@ async function loadVehicles(){
   selected=null;show('execution',false);
   const result=[];
   for(let offset=0;;offset+=500){
-    const page=await checked(supabase.from('auction_vehicles').select('id,vin,label,auction_name,auction_date,lane_run,max_bid,expected_fees,status,notes,created_at').eq('dealer_id',id).order('created_at',{ascending:false}).order('id').range(offset,offset+499));
+    const page=await checked(supabase.from('auction_vehicles').select('id,vin,label,auction_name,auction_date,lane_run,max_bid,expected_fees,status,notes,created_at,import_key').eq('dealer_id',id).order('created_at',{ascending:false}).order('id').range(offset,offset+499));
     if(!inWorkspace(version,id)||request!==listRequest)return;
     result.push(...page);
     if(page.length<500)break;
@@ -150,6 +158,33 @@ async function loadVehicles(){
   const body=$('vehicles');body.replaceChildren();
   for(const v of vehicles){const tr=document.createElement('tr');tr.dataset.id=v.id;const cell=document.createElement('td'), button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=v.label||'Vehicle';cell.append(button);tr.append(cell);td(tr,v.vin);td(tr,[v.auction_name,v.auction_date,v.lane_run].filter(Boolean).join(' • '));td(tr,v.max_bid==null?'—':money(v.max_bid));td(tr,v.status);td(tr,v.notes);button.addEventListener('click',()=>selectVehicle(v.id).catch(err=>msg(err.message,true)));body.append(tr)}
   if(!vehicles.length){const tr=document.createElement('tr');const cell=document.createElement('td');cell.colSpan=6;cell.textContent='No vehicles yet. Add the first VIN above.';tr.append(cell);body.append(tr)}
+  await loadAuctionSummary(version,id,request);
+}
+async function loadAuctionSummary(version,id,request) {
+  show('demoNotice',vehicles.some(v=>v.import_key?.startsWith('demo-history:')));
+  const body=$('auctionReport');
+  body.replaceChildren();
+  $('auctionReportStatus').textContent=vehicles.length?'Loading recorded costs…':'No auction history yet.';
+  if(!vehicles.length)return;
+  const relevant=[];
+  try {
+    for(let offset=0;;offset+=500){
+      const page=await checked(supabase.from('auction_events').select('vehicle_id,event_type,amount').eq('dealer_id',id).order('created_at').order('id').range(offset,offset+499));
+      if(!inWorkspace(version,id)||request!==listRequest)return;
+      relevant.push(...page);
+      if(page.length<500)break;
+    }
+    for(const item of auctionSummary(vehicles,relevant)){
+      const tr=document.createElement('tr');
+      const avg=item.priced?money(item.purchase/item.priced/100):'—';
+      const allIn=item.priced?money((item.purchase+item.expense)/item.priced/100):'—';
+      for(const cell of [item.auction,item.total,item.watching,item.bidding,item.won,item.lost,item.passed,item.priced,avg,allIn])td(tr,cell);
+      body.append(tr);
+    }
+    $('auctionReportStatus').textContent='';
+  }catch{
+    if(inWorkspace(version,id)&&request===listRequest)$('auctionReportStatus').textContent='Recorded costs could not be loaded. Refresh the auction list to retry.';
+  }
 }
 async function selectVehicle(id){
   const version=workspaceVersion,dealer=dealerId,request=++eventRequest;
